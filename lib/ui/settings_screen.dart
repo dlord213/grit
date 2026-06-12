@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:drift/drift.dart' as drift;
 import '../database/database.dart';
 import '../models/enums.dart';
@@ -16,7 +15,7 @@ class SettingsScreen extends ConsumerWidget {
   Future<void> _exportBackup(BuildContext context, WidgetRef ref) async {
     try {
       final db = ref.read(databaseProvider);
-      
+
       final exList = await db.getAllExercises();
       final tmplList = await db.select(db.workoutTemplates).get();
       final tmplExList = await db.select(db.templateExercises).get();
@@ -25,49 +24,65 @@ class SettingsScreen extends ConsumerWidget {
 
       final backup = {
         'version': 1,
-        'exercises': exList.map((e) => {
-          'id': e.id,
-          'name': e.name,
-          'description': e.description,
-          'targetMuscle': e.targetMuscle.name,
-          'equipment': e.equipment.name,
-          'isCustom': e.isCustom,
-        }).toList(),
-        'templates': tmplList.map((t) => {
-          'id': t.id,
-          'name': t.name,
-          'description': t.description,
-        }).toList(),
-        'template_exercises': tmplExList.map((te) => {
-          'id': te.id,
-          'templateId': te.templateId,
-          'exerciseId': te.exerciseId,
-          'sequenceOrder': te.sequenceOrder,
-        }).toList(),
-        'sessions': sessList.map((s) => {
-          'id': s.id,
-          'templateId': s.templateId,
-          'name': s.name,
-          'startTime': s.startTime.toIso8601String(),
-          'endTime': s.endTime?.toIso8601String(),
-          'notes': s.notes,
-        }).toList(),
-        'sets': setsList.map((s) => {
-          'id': s.id,
-          'sessionId': s.sessionId,
-          'exerciseId': s.exerciseId,
-          'weight': s.weight,
-          'reps': s.reps,
-          'setType': s.setType.name,
-          'restTime': s.restTime,
-          'isCompleted': s.isCompleted,
-          'timestamp': s.timestamp.toIso8601String(),
-          'sequenceOrder': s.sequenceOrder,
-        }).toList(),
+        'exercises': exList
+            .map(
+              (e) => {
+                'id': e.id,
+                'name': e.name,
+                'description': e.description,
+                'targetMuscle': e.targetMuscle.name,
+                'equipment': e.equipment.name,
+                'isCustom': e.isCustom,
+              },
+            )
+            .toList(),
+        'templates': tmplList
+            .map(
+              (t) => {'id': t.id, 'name': t.name, 'description': t.description},
+            )
+            .toList(),
+        'template_exercises': tmplExList
+            .map(
+              (te) => {
+                'id': te.id,
+                'templateId': te.templateId,
+                'exerciseId': te.exerciseId,
+                'sequenceOrder': te.sequenceOrder,
+              },
+            )
+            .toList(),
+        'sessions': sessList
+            .map(
+              (s) => {
+                'id': s.id,
+                'templateId': s.templateId,
+                'name': s.name,
+                'startTime': s.startTime.toIso8601String(),
+                'endTime': s.endTime?.toIso8601String(),
+                'notes': s.notes,
+              },
+            )
+            .toList(),
+        'sets': setsList
+            .map(
+              (s) => {
+                'id': s.id,
+                'sessionId': s.sessionId,
+                'exerciseId': s.exerciseId,
+                'weight': s.weight,
+                'reps': s.reps,
+                'setType': s.setType.name,
+                'restTime': s.restTime,
+                'isCompleted': s.isCompleted,
+                'timestamp': s.timestamp.toIso8601String(),
+                'sequenceOrder': s.sequenceOrder,
+              },
+            )
+            .toList(),
       };
 
       final jsonString = const JsonEncoder.withIndent('  ').convert(backup);
-      
+
       // Save locally to a temp file and share
       final tempDir = Directory.systemTemp;
       final file = File('${tempDir.path}/grit_backup.json');
@@ -81,179 +96,10 @@ class SettingsScreen extends ConsumerWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Backup failed: $e'), backgroundColor: Colors.redAccent),
-        );
-      }
-    }
-  }
-
-  Future<void> _importBackup(BuildContext context, WidgetRef ref) async {
-    try {
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['json'],
-      );
-
-      if (result == null || result.files.single.path == null) return;
-
-      final file = File(result.files.single.path!);
-      final content = await file.readAsString();
-      final Map<String, dynamic> backup = json.decode(content);
-
-      if (backup['version'] != 1) {
-        throw Exception('Unsupported backup version.');
-      }
-
-      final db = ref.read(databaseProvider);
-
-      await db.transaction(() async {
-        // 1. Fetch current exercises to prevent duplicates
-        final existingExercises = await db.getAllExercises();
-        final Map<int, int> exerciseIdMap = {};
-
-        final List<dynamic> jsonExercises = backup['exercises'] ?? [];
-        for (final je in jsonExercises) {
-          final oldId = je['id'] as int;
-          final name = je['name'] as String;
-          final description = je['description'] as String?;
-          final muscle = TargetMuscle.fromName(je['targetMuscle'] as String);
-          final equip = Equipment.fromName(je['equipment'] as String);
-          final isCustom = je['isCustom'] as bool;
-
-          // Find if duplicate exists
-          final duplicate = existingExercises.firstWhere(
-            (e) => e.name.toLowerCase() == name.toLowerCase(),
-            orElse: () => const Exercise(
-              id: -1,
-              name: '',
-              targetMuscle: TargetMuscle.Chest,
-              equipment: Equipment.Barbell,
-              isCustom: false,
-            ),
-          );
-
-          if (duplicate.id != -1) {
-            exerciseIdMap[oldId] = duplicate.id;
-          } else {
-            final newId = await db.insertExercise(
-              ExercisesCompanion.insert(
-                name: name,
-                description: drift.Value(description),
-                targetMuscle: muscle,
-                equipment: equip,
-                isCustom: drift.Value(isCustom),
-              ),
-            );
-            exerciseIdMap[oldId] = newId;
-          }
-        }
-
-        // 2. Import Workout Templates
-        final Map<int, int> templateIdMap = {};
-        final List<dynamic> jsonTemplates = backup['templates'] ?? [];
-        for (final jt in jsonTemplates) {
-          final oldId = jt['id'] as int;
-          final name = jt['name'] as String;
-          final description = jt['description'] as String?;
-
-          final newId = await db.into(db.workoutTemplates).insert(
-            WorkoutTemplatesCompanion.insert(
-              name: name,
-              description: drift.Value(description),
-            ),
-          );
-          templateIdMap[oldId] = newId;
-        }
-
-        // 3. Import Template Exercises
-        final List<dynamic> jsonTemplateExs = backup['template_exercises'] ?? [];
-        for (final jte in jsonTemplateExs) {
-          final oldTmplId = jte['templateId'] as int;
-          final oldExId = jte['exerciseId'] as int;
-          final seq = jte['sequenceOrder'] as int;
-
-          final newTmplId = templateIdMap[oldTmplId];
-          final newExId = exerciseIdMap[oldExId];
-
-          if (newTmplId != null && newExId != null) {
-            await db.into(db.templateExercises).insert(
-              TemplateExercisesCompanion.insert(
-                templateId: newTmplId,
-                exerciseId: newExId,
-                sequenceOrder: seq,
-              ),
-            );
-          }
-        }
-
-        // 4. Import Workout Sessions
-        final Map<int, int> sessionIdMap = {};
-        final List<dynamic> jsonSessions = backup['sessions'] ?? [];
-        for (final js in jsonSessions) {
-          final oldId = js['id'] as int;
-          final oldTmplId = js['templateId'] as int?;
-          final name = js['name'] as String;
-          final startTime = DateTime.parse(js['startTime'] as String);
-          final endTime = js['endTime'] != null ? DateTime.parse(js['endTime'] as String) : null;
-          final notes = js['notes'] as String?;
-
-          final newTmplId = oldTmplId != null ? templateIdMap[oldTmplId] : null;
-
-          final newId = await db.into(db.workoutSessions).insert(
-            WorkoutSessionsCompanion.insert(
-              templateId: drift.Value(newTmplId),
-              name: name,
-              startTime: startTime,
-              endTime: drift.Value(endTime),
-              notes: drift.Value(notes),
-            ),
-          );
-          sessionIdMap[oldId] = newId;
-        }
-
-        // 5. Import Sets
-        final List<dynamic> jsonSets = backup['sets'] ?? [];
-        for (final js in jsonSets) {
-          final oldSessId = js['sessionId'] as int;
-          final oldExId = js['exerciseId'] as int;
-          final weight = (js['weight'] as num).toDouble();
-          final reps = js['reps'] as int;
-          final setType = SetType.fromName(js['setType'] as String);
-          final restTime = js['restTime'] as int;
-          final isCompleted = js['isCompleted'] as bool;
-          final timestamp = DateTime.parse(js['timestamp'] as String);
-          final seq = js['sequenceOrder'] as int;
-
-          final newSessId = sessionIdMap[oldSessId];
-          final newExId = exerciseIdMap[oldExId];
-
-          if (newSessId != null && newExId != null) {
-            await db.into(db.exerciseSets).insert(
-              ExerciseSetsCompanion.insert(
-                sessionId: newSessId,
-                exerciseId: newExId,
-                weight: weight,
-                reps: reps,
-                setType: setType,
-                restTime: drift.Value(restTime),
-                isCompleted: drift.Value(isCompleted),
-                timestamp: timestamp,
-                sequenceOrder: seq,
-              ),
-            );
-          }
-        }
-      });
-
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Backup restored successfully!'), backgroundColor: GritTheme.primary),
-        );
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Restore failed: $e'), backgroundColor: Colors.redAccent),
+          SnackBar(
+            content: Text('Backup failed: $e'),
+            backgroundColor: Colors.redAccent,
+          ),
         );
       }
     }
@@ -264,15 +110,26 @@ class SettingsScreen extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: GritTheme.surface,
-        title: const Text('Reset Database?', style: TextStyle(color: Colors.redAccent)),
-        content: const Text('This will delete all templates, custom exercises, and logged workout history. This action cannot be undone.'),
+        title: const Text(
+          'Reset Database?',
+          style: TextStyle(color: Colors.redAccent),
+        ),
+        content: const Text(
+          'This will delete all templates, custom exercises, and logged workout history. This action cannot be undone.',
+        ),
         actions: [
           TextButton(
-            child: const Text('Cancel', style: TextStyle(color: GritTheme.textSecondary)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: GritTheme.textSecondary),
+            ),
             onPressed: () => Navigator.pop(context, false),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+            ),
             child: const Text('Reset'),
             onPressed: () => Navigator.pop(context, true),
           ),
@@ -285,13 +142,19 @@ class SettingsScreen extends ConsumerWidget {
         await ref.read(databaseProvider).clearDatabase();
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Database reset successfully!'), backgroundColor: GritTheme.primary),
+            const SnackBar(
+              content: Text('Database reset successfully!'),
+              backgroundColor: GritTheme.primary,
+            ),
           );
         }
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Reset failed: $e'), backgroundColor: Colors.redAccent),
+            SnackBar(
+              content: Text('Reset failed: $e'),
+              backgroundColor: Colors.redAccent,
+            ),
           );
         }
       }
@@ -301,8 +164,16 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
+      backgroundColor: GritTheme.background,
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.settings_rounded, color: GritTheme.primary),
+            SizedBox(width: 8),
+            Text('Settings'),
+          ],
+        ),
       ),
       body: SafeArea(
         child: ListView(
@@ -318,15 +189,6 @@ class SettingsScreen extends ConsumerWidget {
               Icons.backup_outlined,
               () => _exportBackup(context, ref),
             ),
-            const SizedBox(height: 12),
-            _buildSettingsTile(
-              context,
-              'Import Backup',
-              'Restore your data from a previously exported JSON backup.',
-              Icons.restore_outlined,
-              () => _importBackup(context, ref),
-            ),
-            const SizedBox(height: 12),
             _buildSettingsTile(
               context,
               'Reset Application',
@@ -336,33 +198,52 @@ class SettingsScreen extends ConsumerWidget {
               isDestructive: true,
             ),
             const Divider(height: 40),
-            
-            // About Section
-            _buildSectionHeader('About'),
+            _buildSectionHeader('ABOUT'),
             const SizedBox(height: 12),
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: GritTheme.surface.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: GritTheme.divider),
+                color: GritTheme.surface,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: GritTheme.divider, width: 1.5),
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'Grit Gym Tracker',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  Row(
+                    children: [
+                      ShaderMask(
+                        shaderCallback: (bounds) =>
+                            GritTheme.primaryGradient.createShader(bounds),
+                        child: const Text(
+                          'Grit Gym Tracker',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 18,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(Icons.flash_on_rounded, color: GritTheme.primary, size: 18),
+                    ],
                   ),
-                  SizedBox(height: 4),
-                  Text(
+                  const SizedBox(height: 4),
+                  const Text(
                     'Version 1.0.0',
-                    style: TextStyle(color: GritTheme.textSecondary, fontSize: 13),
+                    style: TextStyle(
+                      color: GritTheme.textSecondary,
+                      fontSize: 13,
+                    ),
                   ),
-                  SizedBox(height: 12),
-                  Text(
+                  const SizedBox(height: 12),
+                  const Text(
                     'An offline-first, privacy-respecting gym progressive overload logger designed for powerlifters and bodybuilders.',
-                    style: TextStyle(color: GritTheme.textSecondary, fontSize: 13, height: 1.4),
+                    style: TextStyle(
+                      color: GritTheme.textSecondary,
+                      fontSize: 13,
+                      height: 1.5,
+                    ),
                   ),
                 ],
               ),
@@ -377,11 +258,11 @@ class SettingsScreen extends ConsumerWidget {
     return Text(
       title,
       style: const TextStyle(
-        fontFamily: 'Outfit',
-        fontWeight: FontWeight.bold,
-        fontSize: 14,
+        fontFamily: 'Nunito',
+        fontWeight: FontWeight.w800,
+        fontSize: 13,
         color: GritTheme.primary,
-        letterSpacing: 1.2,
+        letterSpacing: 1.0,
       ),
     );
   }
@@ -394,25 +275,71 @@ class SettingsScreen extends ConsumerWidget {
     VoidCallback onTap, {
     bool isDestructive = false,
   }) {
-    return Card(
-      child: ListTile(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        leading: Icon(
-          icon,
-          color: isDestructive ? Colors.redAccent : GritTheme.primary,
-        ),
-        title: Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: isDestructive ? Colors.redAccent : GritTheme.textPrimary,
+    final color = isDestructive ? Colors.redAccent : GritTheme.primary;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: GritTheme.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isDestructive
+                ? Colors.redAccent.withValues(alpha: 0.2)
+                : GritTheme.divider,
+            width: 1.5,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.06),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
-        subtitle: Text(
-          subtitle,
-          style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: color, size: 20),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      color: isDestructive
+                          ? Colors.redAccent
+                          : GritTheme.textPrimary,
+                      fontSize: 15,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      color: GritTheme.textSecondary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: color.withValues(alpha: 0.5),
+              size: 20,
+            ),
+          ],
         ),
-        onTap: onTap,
       ),
     );
   }

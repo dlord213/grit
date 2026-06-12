@@ -24,13 +24,28 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
     final exercisesAsync = ref.watch(exercisesStreamProvider);
 
     return Scaffold(
+      backgroundColor: GritTheme.background,
       appBar: AppBar(
-        title: const Text('Exercise Library'),
+        title: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.fitness_center_rounded, color: GritTheme.primary),
+            SizedBox(width: 8),
+            Text('Exercise Library'),
+          ],
+        ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.add, color: GritTheme.primary),
-            tooltip: 'Create Custom Exercise',
-            onPressed: () => _showCreateCustomExerciseDialog(context),
+          GestureDetector(
+            onTap: () => _showCreateCustomExerciseDialog(context),
+            child: Container(
+              margin: const EdgeInsets.only(right: 12, top: 8, bottom: 8),
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                gradient: GritTheme.primaryGradient,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.add_rounded, color: Colors.white, size: 20),
+            ),
           ),
         ],
       ),
@@ -78,41 +93,34 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                     );
                   }
 
-                  return ListView.separated(
-                    padding: const EdgeInsets.all(16),
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     itemCount: filtered.length,
-                    separatorBuilder: (context, index) => const Divider(height: 1),
                     itemBuilder: (context, index) {
                       final ex = filtered[index];
-                      return ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        title: Text(
-                          ex.name,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        decoration: BoxDecoration(
+                          color: GritTheme.surface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: GritTheme.divider, width: 1),
                         ),
-                        subtitle: Text(
-                          '${ex.targetMuscle.name} • ${ex.equipment.name}',
-                          style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                          title: Text(ex.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: GritTheme.textPrimary)),
+                          subtitle: Text('${ex.targetMuscle.name} • ${ex.equipment.name}', style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12, fontWeight: FontWeight.w600)),
+                          trailing: ex.isCustom
+                              ? Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    gradient: GritTheme.accentGradient,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Text('CUSTOM', style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w900)),
+                                )
+                              : const Icon(Icons.chevron_right_rounded, size: 18, color: GritTheme.textSecondary),
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ExerciseDetailScreen(exercise: ex))),
                         ),
-                        trailing: ex.isCustom
-                            ? Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: GritTheme.accent.withValues(alpha: 0.2),
-                                  borderRadius: BorderRadius.circular(4),
-                                  border: Border.all(color: GritTheme.accent, width: 0.5),
-                                ),
-                                child: const Text('CUSTOM', style: TextStyle(color: GritTheme.accent, fontSize: 9, fontWeight: FontWeight.bold)),
-                              )
-                            : const Icon(Icons.chevron_right, size: 16, color: GritTheme.textSecondary),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ExerciseDetailScreen(exercise: ex),
-                            ),
-                          );
-                        },
                       );
                     },
                   );
@@ -214,10 +222,15 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
 
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
+      builder: (_) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          backgroundColor: GritTheme.surface,
-          title: const Text('Create Custom Exercise'),
+          title: const Row(
+            children: [
+              Icon(Icons.fitness_center_rounded, color: GritTheme.primary),
+              SizedBox(width: 8),
+              Text('New Exercise'),
+            ],
+          ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,

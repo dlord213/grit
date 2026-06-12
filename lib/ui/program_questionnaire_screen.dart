@@ -85,16 +85,21 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: GritTheme.background,
       appBar: AppBar(
-        title: const Text('Program Generator'),
+        title: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.auto_awesome_rounded, color: GritTheme.primary),
+            SizedBox(width: 8),
+            Text('Build My Program'),
+          ],
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () {
-            if (_currentStep > 0) {
-              _prevPage();
-            } else {
-              Navigator.pop(context);
-            }
+            if (_currentStep > 0) _prevPage();
+            else Navigator.pop(context);
           },
         ),
       ),
@@ -167,6 +172,7 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
   }
 
   Widget _buildStepIndicator() {
+    final stepTitles = ['Training Frequency', 'Primary Goal', 'Available Equipment'];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
       child: Column(
@@ -176,24 +182,29 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
             children: [
               Text(
                 'Step ${_currentStep + 1} of 3',
-                style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12),
+                style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12, fontWeight: FontWeight.w700),
               ),
-              Text(
-                _currentStep == 0
-                    ? 'Training Frequency'
-                    : (_currentStep == 1 ? 'Primary Goal' : 'Available Equipment'),
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: GritTheme.primary),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: GritTheme.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  stepTitles[_currentStep],
+                  style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: GritTheme.primary),
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           ClipRRect(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(8),
             child: LinearProgressIndicator(
               value: (_currentStep + 1) / 3,
-              backgroundColor: GritTheme.divider,
+              backgroundColor: GritTheme.surfaceLight,
               valueColor: const AlwaysStoppedAnimation<Color>(GritTheme.primary),
-              minHeight: 6,
+              minHeight: 8,
             ),
           ),
         ],
@@ -207,32 +218,22 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
     required Widget child,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Card(
-        color: GritTheme.surface.withValues(alpha: 0.5),
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontFamily: 'Outfit',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                subtitle,
-                style: const TextStyle(color: GritTheme.textSecondary, fontSize: 13),
-              ),
-              const SizedBox(height: 24),
-              Expanded(child: child),
-            ],
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w800, fontSize: 20, color: GritTheme.textPrimary),
           ),
-        ),
+          const SizedBox(height: 6),
+          Text(
+            subtitle,
+            style: const TextStyle(color: GritTheme.textSecondary, fontSize: 13, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 20),
+          Expanded(child: child),
+        ],
       ),
     );
   }
@@ -264,23 +265,33 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
                 _daysPerWeek = val;
               });
             },
-            child: Container(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: isSelected ? GritTheme.primary.withValues(alpha: 0.1) : Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
+                color: isSelected ? GritTheme.primary.withValues(alpha: 0.1) : GritTheme.surface,
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: isSelected ? GritTheme.primary : GritTheme.divider,
-                  width: isSelected ? 1.5 : 1,
+                  width: isSelected ? 2 : 1.5,
                 ),
+                boxShadow: isSelected
+                    ? [BoxShadow(color: GritTheme.primary.withValues(alpha: 0.15), blurRadius: 10, offset: const Offset(0, 3))]
+                    : null,
               ),
               child: Row(
                 children: [
-                  CircleAvatar(
-                    backgroundColor: isSelected ? GritTheme.primary : GritTheme.surfaceLight,
-                    foregroundColor: isSelected ? GritTheme.background : GritTheme.textPrimary,
-                    radius: 18,
-                    child: Text('$val', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      gradient: isSelected ? GritTheme.primaryGradient : null,
+                      color: isSelected ? null : GritTheme.surfaceLight,
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: Text('$val', style: TextStyle(fontWeight: FontWeight.w900, color: isSelected ? Colors.white : GritTheme.textSecondary)),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -339,22 +350,33 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
                 _goal = val;
               });
             },
-            child: Container(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: isSelected ? GritTheme.primary.withValues(alpha: 0.1) : Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
+                color: isSelected ? GritTheme.primary.withValues(alpha: 0.1) : GritTheme.surface,
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: isSelected ? GritTheme.primary : GritTheme.divider,
-                  width: isSelected ? 1.5 : 1,
+                  width: isSelected ? 2 : 1.5,
                 ),
+                boxShadow: isSelected
+                    ? [BoxShadow(color: GritTheme.primary.withValues(alpha: 0.15), blurRadius: 10, offset: const Offset(0, 3))]
+                    : null,
               ),
               child: Row(
                 children: [
-                  Icon(
-                    optionIcons[val],
-                    color: isSelected ? GritTheme.primary : GritTheme.textSecondary,
-                    size: 24,
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: isSelected ? GritTheme.primary.withValues(alpha: 0.15) : GritTheme.surfaceLight,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      optionIcons[val],
+                      color: isSelected ? GritTheme.primary : GritTheme.textSecondary,
+                      size: 22,
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -413,37 +435,42 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
                 _equipment = val;
               });
             },
-            child: Container(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: isSelected ? GritTheme.primary.withValues(alpha: 0.1) : Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
+                color: isSelected ? GritTheme.accent.withValues(alpha: 0.1) : GritTheme.surface,
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isSelected ? GritTheme.primary : GritTheme.divider,
-                  width: isSelected ? 1.5 : 1,
+                  color: isSelected ? GritTheme.accent : GritTheme.divider,
+                  width: isSelected ? 2 : 1.5,
                 ),
+                boxShadow: isSelected
+                    ? [BoxShadow(color: GritTheme.accent.withValues(alpha: 0.15), blurRadius: 10, offset: const Offset(0, 3))]
+                    : null,
               ),
               child: Row(
                 children: [
-                  Icon(
-                    optionIcons[val],
-                    color: isSelected ? GritTheme.primary : GritTheme.textSecondary,
-                    size: 24,
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: isSelected ? GritTheme.accent.withValues(alpha: 0.15) : GritTheme.surfaceLight,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      optionIcons[val],
+                      color: isSelected ? GritTheme.accent : GritTheme.textSecondary,
+                      size: 22,
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          val,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                        ),
+                        Text(val, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
                         const SizedBox(height: 4),
-                        Text(
-                          optionDescs[val]!,
-                          style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12),
-                        ),
+                        Text(optionDescs[val]!, style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12, fontWeight: FontWeight.w600)),
                       ],
                     ),
                   ),

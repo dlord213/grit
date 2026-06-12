@@ -25,6 +25,13 @@ class _MainNavigationHostState extends ConsumerState<MainNavigationHost> {
     const SettingsScreen(),
   ];
 
+  final List<_NavItem> _navItems = const [
+    _NavItem(icon: Icons.home_rounded, label: 'Home', color: GritTheme.primary),
+    _NavItem(icon: Icons.fitness_center_rounded, label: 'Exercises', color: GritTheme.accent),
+    _NavItem(icon: Icons.bar_chart_rounded, label: 'Stats', color: GritTheme.accentWarm),
+    _NavItem(icon: Icons.settings_rounded, label: 'Settings', color: GritTheme.success),
+  ];
+
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     final hours = duration.inHours;
@@ -52,7 +59,7 @@ class _MainNavigationHostState extends ConsumerState<MainNavigationHost> {
             Positioned(
               left: 16,
               right: 16,
-              bottom: kBottomNavigationBarHeight + 16,
+              bottom: 90,
               child: GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -65,13 +72,14 @@ class _MainNavigationHostState extends ConsumerState<MainNavigationHost> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: GritTheme.surface.withValues(alpha: 0.9),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: GritTheme.primary, width: 1.5),
+                    color: GritTheme.surface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: GritTheme.primary.withValues(alpha: 0.3), width: 2),
                     boxShadow: [
                       BoxShadow(
-                        color: GritTheme.primary.withValues(alpha: 0.15),
-                        blurRadius: 10,
+                        color: GritTheme.primary.withValues(alpha: 0.2),
+                        blurRadius: 16,
+                        spreadRadius: 0,
                         offset: const Offset(0, 4),
                       ),
                     ],
@@ -81,13 +89,13 @@ class _MainNavigationHostState extends ConsumerState<MainNavigationHost> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: GritTheme.primary.withValues(alpha: 0.1),
+                          gradient: GritTheme.primaryGradient,
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
-                          Icons.fitness_center,
-                          color: GritTheme.primary,
-                          size: 20,
+                          Icons.fitness_center_rounded,
+                          color: Colors.white,
+                          size: 18,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -99,8 +107,8 @@ class _MainNavigationHostState extends ConsumerState<MainNavigationHost> {
                             Text(
                               activeWorkout.name,
                               style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 14,
                                 color: GritTheme.textPrimary,
                               ),
                               maxLines: 1,
@@ -118,6 +126,7 @@ class _MainNavigationHostState extends ConsumerState<MainNavigationHost> {
                                   style: const TextStyle(
                                     fontSize: 12,
                                     color: GritTheme.textSecondary,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 );
                               },
@@ -125,9 +134,20 @@ class _MainNavigationHostState extends ConsumerState<MainNavigationHost> {
                           ],
                         ),
                       ),
-                      const Icon(
-                        Icons.chevron_right,
-                        color: GritTheme.primary,
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          gradient: GritTheme.primaryGradient,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Text(
+                          'Open',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -136,42 +156,77 @@ class _MainNavigationHostState extends ConsumerState<MainNavigationHost> {
             ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: GritTheme.surface,
-        selectedItemColor: GritTheme.primary,
-        unselectedItemColor: GritTheme.textSecondary,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard_outlined),
-            activeIcon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            activeIcon: Icon(Icons.search),
-            label: 'Exercises',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart_outlined),
-            activeIcon: Icon(Icons.bar_chart),
-            label: 'Analytics',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
-            activeIcon: Icon(Icons.settings),
-            label: 'Settings',
+      bottomNavigationBar: _buildKawaiiNavBar(),
+    );
+  }
+
+  Widget _buildKawaiiNavBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: GritTheme.surface,
+        border: Border(top: BorderSide(color: GritTheme.divider, width: 1.5)),
+        boxShadow: [
+          BoxShadow(
+            color: GritTheme.primary.withValues(alpha: 0.06),
+            blurRadius: 20,
+            offset: const Offset(0, -4),
           ),
         ],
       ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(
+            children: List.generate(_navItems.length, (index) {
+              final item = _navItems[index];
+              final isActive = _currentIndex == index;
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () => setState(() => _currentIndex = index),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeInOut,
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+                    decoration: BoxDecoration(
+                      color: isActive ? item.color.withValues(alpha: 0.12) : Colors.transparent,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          item.icon,
+                          color: isActive ? item.color : GritTheme.textSecondary,
+                          size: isActive ? 26 : 24,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          item.label,
+                          style: TextStyle(
+                            color: isActive ? item.color : GritTheme.textSecondary,
+                            fontSize: 11,
+                            fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ),
+        ),
+      ),
     );
   }
+}
+
+class _NavItem {
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const _NavItem({required this.icon, required this.label, required this.color});
 }

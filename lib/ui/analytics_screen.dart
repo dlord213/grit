@@ -124,13 +124,22 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: GritTheme.background,
       appBar: AppBar(
-        title: const Text('Analytics Dashboard'),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.bar_chart_rounded, color: GritTheme.primary),
+            const SizedBox(width: 8),
+            const Text('Analytics'),
+          ],
+        ),
       ),
       body: SafeArea(
         child: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : RefreshIndicator(
+                color: GritTheme.primary,
                 onRefresh: _loadAnalyticsData,
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -138,41 +147,46 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Overview Numbers
                       _buildOverviewGrid(),
                       const SizedBox(height: 24),
-
-                      // Weekly Frequency
-                      Text(
-                        'Weekly Workout Frequency',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontFamily: 'Outfit'),
-                      ),
+                      _buildSectionLabel('Weekly Frequency', Icons.calendar_month_rounded),
                       const SizedBox(height: 12),
                       _buildFrequencyBarChart(),
-                      const Divider(height: 40),
-
-                      // Muscle Split Pie Chart
-                      Text(
-                        'Muscle Group Volume (Last 30 Days)',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontFamily: 'Outfit'),
-                      ),
+                      const SizedBox(height: 24),
+                      _buildSectionLabel('Muscle Volume (30 Days)', Icons.fitness_center_rounded),
                       const SizedBox(height: 12),
                       _buildMusclePieChart(),
-                      const Divider(height: 40),
-
-                      // Exercise Progression Selector & Line Chart
-                      Text(
-                        'Exercise 1RM Progression',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontFamily: 'Outfit'),
-                      ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 24),
+                      _buildSectionLabel('1RM Progression', Icons.trending_up_rounded),
+                      const SizedBox(height: 12),
                       _buildExercise1RMProgressor(),
-                      const SizedBox(height: 60), // padding bottom
+                      const SizedBox(height: 60),
                     ],
                   ),
                 ),
               ),
       ),
+    );
+  }
+
+  Widget _buildSectionLabel(String text, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: GritTheme.primary),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontFamily: 'Nunito',
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+              color: GritTheme.textPrimary,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 
@@ -188,23 +202,9 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
 
     return Row(
       children: [
-        Expanded(
-          child: _buildStatCard(
-            'Total Workouts',
-            '$totalWorkouts',
-            Icons.fitness_center,
-            GritTheme.primary,
-          ),
-        ),
+        Expanded(child: _buildStatCard('Total Workouts', '$totalWorkouts', Icons.fitness_center_rounded, GritTheme.primary)),
         const SizedBox(width: 16),
-        Expanded(
-          child: _buildStatCard(
-            'Avg. Duration',
-            '${avgDuration.toStringAsFixed(0)} min',
-            Icons.timer_outlined,
-            GritTheme.accent,
-          ),
-        ),
+        Expanded(child: _buildStatCard('Avg. Duration', '${avgDuration.toStringAsFixed(0)} min', Icons.timer_rounded, GritTheme.accent)),
       ],
     );
   }
@@ -213,9 +213,10 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: GritTheme.surface.withValues(alpha: 0.6),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: GritTheme.divider),
+        color: GritTheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: GritTheme.divider, width: 1.5),
+        boxShadow: [BoxShadow(color: color.withValues(alpha: 0.08), blurRadius: 12, offset: const Offset(0, 4))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,7 +224,14 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(label, style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12)),
+              Expanded(
+                child: Text(
+                  label,
+                  style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 4),
               Icon(icon, color: color, size: 18),
             ],
           ),
@@ -231,6 +239,8 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
           Text(
             value,
             style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 24, fontFamily: 'Outfit'),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -262,7 +272,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
             leftTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
-                reservedSize: 24,
+                reservedSize: 28,
                 getTitlesWidget: (value, meta) {
                   if (value == value.toInt().toDouble()) {
                     return Text('${value.toInt()}', style: const TextStyle(color: GritTheme.textSecondary, fontSize: 10));
@@ -354,7 +364,13 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
             children: [
               Container(width: 12, height: 12, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
               const SizedBox(width: 8),
-              Text('$muscle ($count sets)', style: const TextStyle(fontSize: 12, color: GritTheme.textSecondary)),
+              Flexible(
+                child: Text(
+                  '$muscle ($count sets)',
+                  style: const TextStyle(fontSize: 12, color: GritTheme.textSecondary),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
         ),
@@ -392,6 +408,110 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
     );
   }
 
+  void _showExerciseSelectorBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          maxChildSize: 0.85,
+          minChildSize: 0.4,
+          expand: false,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: const BoxDecoration(
+                color: GritTheme.background,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 12),
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: GritTheme.divider,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.fitness_center_rounded, color: GritTheme.primary),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Choose Exercise',
+                          style: TextStyle(
+                            fontFamily: 'Nunito',
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                            color: GritTheme.textPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Expanded(
+                    child: ListView.builder(
+                      controller: scrollController,
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      itemCount: _exercises.length,
+                      itemBuilder: (context, index) {
+                        final ex = _exercises[index];
+                        final isSelected = _selectedExercise?.id == ex.id;
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          decoration: BoxDecoration(
+                            color: isSelected ? GritTheme.primary.withValues(alpha: 0.08) : GritTheme.surface,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: isSelected ? GritTheme.primary : GritTheme.divider,
+                              width: isSelected ? 2 : 1.5,
+                            ),
+                          ),
+                          child: ListTile(
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            title: Text(
+                              ex.name,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w800,
+                                color: isSelected ? GritTheme.primary : GritTheme.textPrimary,
+                              ),
+                            ),
+                            subtitle: Text(
+                              '${ex.targetMuscle.name} • ${ex.equipment.name}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                                color: GritTheme.textSecondary,
+                              ),
+                            ),
+                            trailing: isSelected
+                                ? const Icon(Icons.check_circle_rounded, color: GritTheme.primary)
+                                : null,
+                            onTap: () {
+                              _onExerciseChanged(ex);
+                              Navigator.pop(context);
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildExercise1RMProgressor() {
     if (_exercises.isEmpty) {
       return const SizedBox();
@@ -400,14 +520,41 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        DropdownButtonFormField<Exercise>(
-          initialValue: _selectedExercise,
-          dropdownColor: GritTheme.surface,
-          decoration: const InputDecoration(labelText: 'Select Exercise'),
-          items: _exercises
-              .map((ex) => DropdownMenuItem(value: ex, child: Text(ex.name)))
-              .toList(),
-          onChanged: _onExerciseChanged,
+        InkWell(
+          onTap: () => _showExerciseSelectorBottomSheet(context),
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: GritTheme.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: GritTheme.divider, width: 1.5),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.fitness_center_rounded, color: GritTheme.primary, size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Select Exercise',
+                        style: TextStyle(color: GritTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        _selectedExercise?.name ?? 'Select an exercise...',
+                        style: const TextStyle(color: GritTheme.textPrimary, fontSize: 14, fontWeight: FontWeight.w800),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.keyboard_arrow_down_rounded, color: GritTheme.textSecondary),
+              ],
+            ),
+          ),
         ),
         const SizedBox(height: 16),
         _build1RMProgressionChart(),
@@ -488,7 +635,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
             leftTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
-                reservedSize: 32,
+                reservedSize: 40,
                 getTitlesWidget: (value, meta) {
                   return SideTitleWidget(
                     axisSide: meta.axisSide,

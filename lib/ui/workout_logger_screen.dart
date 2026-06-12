@@ -23,9 +23,7 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60);
     final seconds = duration.inSeconds.remainder(60);
-    if (hours > 0) {
-      return '${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}';
-    }
+    if (hours > 0) return '${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}';
     return '${twoDigits(minutes)}:${twoDigits(seconds)}';
   }
 
@@ -54,118 +52,128 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
     if (!activeWorkout.hasActiveSession) {
       return Scaffold(
         appBar: AppBar(title: const Text('Log Workout')),
-        body: const Center(
-          child: Text('No active workout session found.'),
-        ),
+        body: const Center(child: Text('No active workout session found.')),
       );
     }
 
     return Scaffold(
+      backgroundColor: GritTheme.background,
       appBar: AppBar(
+        backgroundColor: GritTheme.surface,
+        elevation: 0,
         title: TextField(
           controller: _nameController,
           textAlign: TextAlign.center,
-          style: Theme.of(context).appBarTheme.titleTextStyle,
+          style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w800, fontSize: 18, color: GritTheme.textPrimary),
           decoration: const InputDecoration(
             hintText: 'Workout Name',
             border: InputBorder.none,
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,
             contentPadding: EdgeInsets.zero,
+            filled: false,
           ),
-          onChanged: (val) {
-            ref.read(activeWorkoutProvider.notifier).updateName(val.trim());
-          },
+          onChanged: (val) => ref.read(activeWorkoutProvider.notifier).updateName(val.trim()),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.close),
-          tooltip: 'Minimize',
+          icon: const Icon(Icons.keyboard_arrow_down_rounded, color: GritTheme.textPrimary, size: 28),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          TextButton(
-            onPressed: () => _confirmFinishWorkout(context),
-            child: const Text(
-              'FINISH',
-              style: TextStyle(color: GritTheme.primary, fontWeight: FontWeight.bold),
+          GestureDetector(
+            onTap: () => _confirmFinishWorkout(context),
+            child: Container(
+              margin: const EdgeInsets.only(right: 12, top: 8, bottom: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              decoration: BoxDecoration(
+                gradient: GritTheme.primaryGradient,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Text('FINISH', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13)),
             ),
           ),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Container(
+            color: GritTheme.surface,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(color: GritTheme.primary.withValues(alpha: 0.1), shape: BoxShape.circle),
+                      child: const Icon(Icons.timer_rounded, color: GritTheme.primary, size: 16),
+                    ),
+                    const SizedBox(width: 8),
+                    StreamBuilder<Duration>(
+                      stream: ref.read(activeWorkoutProvider.notifier).durationStream,
+                      builder: (context, snapshot) {
+                        final duration = snapshot.data ?? DateTime.now().difference(activeWorkout.startTime!);
+                        return Text(_formatDuration(duration),
+                            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: GritTheme.textPrimary));
+                      },
+                    ),
+                  ],
+                ),
+                TextButton.icon(
+                  onPressed: () => _confirmCancelWorkout(context),
+                  icon: const Icon(Icons.close_rounded, color: Colors.redAccent, size: 16),
+                  label: const Text('Cancel', style: TextStyle(color: Colors.redAccent, fontSize: 12, fontWeight: FontWeight.w700)),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
       body: SafeArea(
         child: Column(
           children: [
-            // Timer & Stats Bar
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-              color: GritTheme.surface.withValues(alpha: 0.4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.timer, color: GritTheme.primary, size: 18),
-                      const SizedBox(width: 6),
-                      StreamBuilder<Duration>(
-                        stream: ref.read(activeWorkoutProvider.notifier).durationStream,
-                        builder: (context, snapshot) {
-                          final duration = snapshot.data ??
-                              DateTime.now().difference(activeWorkout.startTime!);
-                          return Text(
-                            _formatDuration(duration),
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                  TextButton.icon(
-                    onPressed: () => _confirmCancelWorkout(context),
-                    icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 16),
-                    label: const Text('Cancel Workout', style: TextStyle(color: Colors.redAccent, fontSize: 12)),
-                  ),
-                ],
-              ),
-            ),
-
-            // Exercise List
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
-                  // Workout Notes
-                  TextField(
-                    controller: _notesController,
-                    maxLines: null,
-                    decoration: const InputDecoration(
-                      hintText: 'Add workout notes / motivation here...',
-                      labelText: 'Workout Notes',
-                      alignLabelWithHint: true,
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: GritTheme.surface,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: GritTheme.divider, width: 1.5),
                     ),
-                    onChanged: (val) {
-                      ref.read(activeWorkoutProvider.notifier).updateNotes(val.trim());
-                    },
+                    child: TextField(
+                      controller: _notesController,
+                      maxLines: null,
+                      decoration: const InputDecoration(
+                        hintText: 'Notes, cues, or motivation...',
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        contentPadding: EdgeInsets.all(16),
+                        filled: false,
+                      ),
+                      onChanged: (val) => ref.read(activeWorkoutProvider.notifier).updateNotes(val.trim()),
+                    ),
                   ),
-                  const SizedBox(height: 16),
-
-                  // Exercises list
-                  ...activeWorkout.exercises.map((activeEx) {
-                    return _buildExerciseCard(context, activeEx);
-                  }),
-
+                  ...activeWorkout.exercises.map((activeEx) => _buildExerciseCard(context, activeEx)),
                   const SizedBox(height: 12),
-                  // Add Exercise Button
                   OutlinedButton.icon(
                     onPressed: () => _showAddExerciseBottomSheet(context),
-                    icon: const Icon(Icons.add),
+                    icon: const Icon(Icons.add_rounded),
                     label: const Text('ADD EXERCISE'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: GritTheme.accent,
+                      side: const BorderSide(color: GritTheme.accent, width: 2),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
                   ),
-                  const SizedBox(height: 80), // Space for floating timer
+                  const SizedBox(height: 80),
                 ],
               ),
             ),
-
-            // Floating Rest Timer Bar at Bottom
             if (timerState.isActive) _buildRestTimerBar(timerState),
           ],
         ),
@@ -174,22 +182,16 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
   }
 
   Widget _buildRestTimerBar(RestTimerState timerState) {
-    final percent = timerState.duration > 0
-        ? timerState.remainingSeconds / timerState.duration
-        : 0.0;
-
+    final percent = timerState.duration > 0 ? timerState.remainingSeconds / timerState.duration : 0.0;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       decoration: BoxDecoration(
         color: GritTheme.surface,
-        border: const Border(top: BorderSide(color: GritTheme.divider, width: 1.5)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 10,
-            offset: const Offset(0, -4),
-          ),
+          BoxShadow(color: GritTheme.accent.withValues(alpha: 0.15), blurRadius: 16, offset: const Offset(0, -4)),
         ],
+        border: Border(top: BorderSide(color: GritTheme.accent.withValues(alpha: 0.3), width: 2)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -197,45 +199,49 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
                 children: [
-                  const Text('Rest Timer', style: TextStyle(color: GritTheme.textSecondary, fontSize: 12)),
-                  Text(
-                    '${timerState.remainingSeconds}s remaining',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: GritTheme.primary),
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(gradient: GritTheme.accentGradient, shape: BoxShape.circle),
+                    child: const Icon(Icons.hourglass_bottom_rounded, color: Colors.white, size: 14),
+                  ),
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Rest Timer', style: TextStyle(color: GritTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.w600)),
+                      Text('${timerState.remainingSeconds}s', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: GritTheme.accent)),
+                    ],
                   ),
                 ],
               ),
               Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.remove, color: GritTheme.textPrimary),
-                    onPressed: () => ref.read(restTimerProvider.notifier).adjustTime(-30),
-                  ),
-                  const Text('-30s', style: TextStyle(fontSize: 12)),
-                  IconButton(
-                    icon: const Icon(Icons.add, color: GritTheme.textPrimary),
-                    onPressed: () => ref.read(restTimerProvider.notifier).adjustTime(30),
-                  ),
-                  const Text('+30s', style: TextStyle(fontSize: 12)),
-                  const SizedBox(width: 12),
-                  TextButton(
-                    onPressed: () => ref.read(restTimerProvider.notifier).stopTimer(),
-                    child: const Text('SKIP', style: TextStyle(color: Colors.redAccent)),
+                  _timerAdjustBtn('-30s', -30),
+                  const SizedBox(width: 6),
+                  _timerAdjustBtn('+30s', 30),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: () => ref.read(restTimerProvider.notifier).stopTimer(),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(color: Colors.redAccent.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+                      child: const Text('SKIP', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w800, fontSize: 12)),
+                    ),
                   ),
                 ],
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           ClipRRect(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(8),
             child: LinearProgressIndicator(
               value: percent,
-              backgroundColor: GritTheme.divider,
-              valueColor: const AlwaysStoppedAnimation<Color>(GritTheme.primary),
-              minHeight: 4,
+              backgroundColor: GritTheme.surfaceLight,
+              valueColor: const AlwaysStoppedAnimation<Color>(GritTheme.accent),
+              minHeight: 6,
             ),
           ),
         ],
@@ -243,9 +249,26 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
     );
   }
 
+  Widget _timerAdjustBtn(String label, int seconds) {
+    return GestureDetector(
+      onTap: () => ref.read(restTimerProvider.notifier).adjustTime(seconds),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(color: GritTheme.surfaceLight, borderRadius: BorderRadius.circular(10)),
+        child: Text(label, style: const TextStyle(color: GritTheme.textSecondary, fontWeight: FontWeight.w700, fontSize: 12)),
+      ),
+    );
+  }
+
   Widget _buildExerciseCard(BuildContext context, ActiveExercise activeEx) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: GritTheme.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: GritTheme.divider, width: 1.5),
+        boxShadow: [BoxShadow(color: GritTheme.primary.withValues(alpha: 0.05), blurRadius: 12, offset: const Offset(0, 4))],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -258,213 +281,176 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        activeEx.exercise.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                      Text(
-                        '${activeEx.exercise.targetMuscle.name} • ${activeEx.exercise.equipment.name}',
-                        style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12),
-                      ),
+                      Text(activeEx.exercise.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: GritTheme.textPrimary)),
+                      Text('${activeEx.exercise.targetMuscle.name} • ${activeEx.exercise.equipment.name}',
+                          style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12, fontWeight: FontWeight.w600)),
                     ],
                   ),
                 ),
                 PopupMenuButton<String>(
-                  icon: const Icon(Icons.more_vert, color: GritTheme.textSecondary),
+                  icon: const Icon(Icons.more_vert_rounded, color: GritTheme.textSecondary),
                   onSelected: (val) {
-                    if (val == 'delete') {
-                      ref.read(activeWorkoutProvider.notifier).removeExercise(activeEx.exercise.id);
-                    }
+                    if (val == 'delete') ref.read(activeWorkoutProvider.notifier).removeExercise(activeEx.exercise.id);
                   },
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 'delete',
-                      child: Text('Delete Exercise', style: TextStyle(color: Colors.redAccent)),
-                    ),
+                  itemBuilder: (_) => [
+                    const PopupMenuItem(value: 'delete', child: Text('Remove Exercise', style: TextStyle(color: Colors.redAccent))),
                   ],
                 ),
-              ],
-            ),
-            const Divider(height: 24),
-            
-            // Set List Table
-            Table(
-              columnWidths: const {
-                0: FlexColumnWidth(1.2), // Set num
-                1: FlexColumnWidth(1.8), // Type
-                2: FlexColumnWidth(2.2), // Last Time
-                3: FlexColumnWidth(2.0), // Weight (Lbs)
-                4: FlexColumnWidth(1.6), // Reps
-                5: FlexColumnWidth(1.2), // Complete check
-              },
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              children: [
-                const TableRow(
-                  children: [
-                    Text('Set', style: TextStyle(color: GritTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.bold)),
-                    Text('Type', style: TextStyle(color: GritTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.bold)),
-                    Text('Last Time', style: TextStyle(color: GritTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.bold)),
-                    Text('lbs', style: TextStyle(color: GritTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.bold)),
-                    Text('Reps', style: TextStyle(color: GritTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.bold)),
-                    Text('', style: TextStyle(color: GritTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-                ...List.generate(activeEx.sets.length, (index) {
-                  final set = activeEx.sets[index];
-                  return TableRow(
-                    children: [
-                      // Set num
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Text('${index + 1}'),
-                      ),
-                      // Set Type Dropdown
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: DropdownButton<SetType>(
-                          value: set.setType,
-                          isDense: true,
-                          underline: const SizedBox(),
-                          icon: const SizedBox(),
-                          dropdownColor: GritTheme.surface,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: set.setType == SetType.Normal
-                                ? GritTheme.textPrimary
-                                : (set.setType == SetType.Warmup ? Colors.amber : Colors.redAccent),
-                          ),
-                          items: SetType.values
-                              .map((type) => DropdownMenuItem(
-                                    value: type,
-                                    child: Text(type.name[0]), // Show short character W, N, D, F
-                                  ))
-                              .toList(),
-                          onChanged: (val) {
-                            if (val != null) {
-                              ref.read(activeWorkoutProvider.notifier).updateSet(
-                                    activeEx.exercise.id,
-                                    index,
-                                    set.copyWith(setType: val),
-                                  );
-                            }
-                          },
-                        ),
-                      ),
-                      // Last Time Micro Preview
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Text(
-                          set.lastWeight != null
-                              ? '${set.lastWeight!.toStringAsFixed(0)}x${set.lastReps}'
-                              : '—',
-                          style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12),
-                        ),
-                      ),
-                      // Weight Input + Plate Calculator Trigger
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: ActiveSetInputField(
-                                initialValue: set.weight.toString(),
-                                isDecimal: true,
-                                isCompleted: set.isCompleted,
-                                onChanged: (val) {
-                                  final weight = double.tryParse(val) ?? 0.0;
-                                  ref.read(activeWorkoutProvider.notifier).updateSet(
-                                        activeEx.exercise.id,
-                                        index,
-                                        set.copyWith(weight: weight),
-                                      );
-                                },
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.grid_on, size: 14, color: GritTheme.textSecondary),
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              onPressed: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  backgroundColor: Colors.transparent,
-                                  builder: (context) => PlateCalculatorModal(
-                                    defaultTargetWeight: set.weight,
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      // Reps Input
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
-                        child: ActiveSetInputField(
-                          initialValue: set.reps.toString(),
-                          isDecimal: false,
-                          isCompleted: set.isCompleted,
-                          onChanged: (val) {
-                            final reps = int.tryParse(val) ?? 0;
-                            ref.read(activeWorkoutProvider.notifier).updateSet(
-                                  activeEx.exercise.id,
-                                  index,
-                                  set.copyWith(reps: reps),
-                                );
-                          },
-                        ),
-                      ),
-                      // Complete Checkbox
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: InkWell(
-                          onTap: () {
-                            ref.read(activeWorkoutProvider.notifier).updateSet(
-                                  activeEx.exercise.id,
-                                  index,
-                                  set.copyWith(isCompleted: !set.isCompleted),
-                                );
-                          },
-                          onLongPress: () {
-                            // Long press deletes set
-                            ref.read(activeWorkoutProvider.notifier).removeSet(activeEx.exercise.id, index);
-                          },
-                          child: Container(
-                            width: 22,
-                            height: 22,
-                            decoration: BoxDecoration(
-                              color: set.isCompleted ? GritTheme.primary : Colors.transparent,
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(
-                                color: set.isCompleted ? GritTheme.primary : GritTheme.divider,
-                                width: 1.5,
-                              ),
-                            ),
-                            child: set.isCompleted
-                                ? const Icon(Icons.check, size: 14, color: GritTheme.background)
-                                : null,
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                }),
               ],
             ),
             const SizedBox(height: 12),
+            Container(height: 1, color: GritTheme.divider),
+            const SizedBox(height: 8),
+            Table(
+              columnWidths: const {
+                0: FlexColumnWidth(1.2),
+                1: FlexColumnWidth(1.8),
+                2: FlexColumnWidth(2.2),
+                3: FlexColumnWidth(2.0),
+                4: FlexColumnWidth(1.6),
+                5: FlexColumnWidth(1.2),
+              },
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              children: [
+                const TableRow(children: [
+                  Text('Set', style: TextStyle(color: GritTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.w700)),
+                  Text('Type', style: TextStyle(color: GritTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.w700)),
+                  Text('Last', style: TextStyle(color: GritTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.w700)),
+                  Text('lbs', style: TextStyle(color: GritTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.w700)),
+                  Text('Reps', style: TextStyle(color: GritTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.w700)),
+                  Text('', style: TextStyle(fontSize: 11)),
+                ]),
+                ...List.generate(activeEx.sets.length, (index) {
+                  final set = activeEx.sets[index];
+                  return TableRow(children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Container(
+                        width: 22,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          color: GritTheme.surfaceLight,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text('${index + 1}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 11)),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: DropdownButton<SetType>(
+                        value: set.setType,
+                        isDense: true,
+                        underline: const SizedBox(),
+                        icon: const SizedBox(),
+                        dropdownColor: GritTheme.surface,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: set.setType == SetType.Normal ? GritTheme.textPrimary : (set.setType == SetType.Warmup ? GritTheme.accentWarm : Colors.redAccent),
+                        ),
+                        items: SetType.values.map((type) => DropdownMenuItem(value: type, child: Text(type.name[0]))).toList(),
+                        onChanged: (val) {
+                          if (val != null) ref.read(activeWorkoutProvider.notifier).updateSet(activeEx.exercise.id, index, set.copyWith(setType: val));
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Text(
+                        set.lastWeight != null ? '${set.lastWeight!.toStringAsFixed(0)}x${set.lastReps}' : '—',
+                        style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: ActiveSetInputField(
+                              initialValue: set.weight.toString(),
+                              isDecimal: true,
+                              isCompleted: set.isCompleted,
+                              onChanged: (val) {
+                                final weight = double.tryParse(val) ?? 0.0;
+                                ref.read(activeWorkoutProvider.notifier).updateSet(activeEx.exercise.id, index, set.copyWith(weight: weight));
+                              },
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.grid_on_rounded, size: 14, color: GritTheme.textSecondary),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: Colors.transparent,
+                                builder: (_) => PlateCalculatorModal(defaultTargetWeight: set.weight),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+                      child: ActiveSetInputField(
+                        initialValue: set.reps.toString(),
+                        isDecimal: false,
+                        isCompleted: set.isCompleted,
+                        onChanged: (val) {
+                          final reps = int.tryParse(val) ?? 0;
+                          ref.read(activeWorkoutProvider.notifier).updateSet(activeEx.exercise.id, index, set.copyWith(reps: reps));
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: InkWell(
+                        onTap: () => ref.read(activeWorkoutProvider.notifier).updateSet(activeEx.exercise.id, index, set.copyWith(isCompleted: !set.isCompleted)),
+                        onLongPress: () => ref.read(activeWorkoutProvider.notifier).removeSet(activeEx.exercise.id, index),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            gradient: set.isCompleted ? GritTheme.primaryGradient : null,
+                            color: set.isCompleted ? null : Colors.transparent,
+                            borderRadius: BorderRadius.circular(7),
+                            border: Border.all(
+                              color: set.isCompleted ? GritTheme.primaryDark : GritTheme.divider,
+                              width: 2,
+                            ),
+                            boxShadow: set.isCompleted
+                                ? [BoxShadow(color: GritTheme.primary.withValues(alpha: 0.3), blurRadius: 6)]
+                                : null,
+                          ),
+                          child: set.isCompleted ? const Icon(Icons.check_rounded, size: 14, color: Colors.white) : null,
+                        ),
+                      ),
+                    ),
+                  ]);
+                }),
+              ],
+            ),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton.icon(
                   onPressed: () => ref.read(activeWorkoutProvider.notifier).addSet(activeEx.exercise.id),
-                  icon: const Icon(Icons.add, size: 16),
-                  label: const Text('Add Set', style: TextStyle(fontSize: 13)),
+                  icon: const Icon(Icons.add_rounded, size: 16),
+                  label: const Text('Add Set', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
                   style: TextButton.styleFrom(foregroundColor: GritTheme.primary),
                 ),
-                Text(
-                  '1RM: ${_calculateEstimated1RM(activeEx.sets).toStringAsFixed(1)} lbs',
-                  style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(color: GritTheme.accentWarm.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
+                  child: Text(
+                    '1RM: ${_calculateEstimated1RM(activeEx.sets).toStringAsFixed(1)} lbs',
+                    style: const TextStyle(color: GritTheme.accentWarm, fontSize: 11, fontWeight: FontWeight.w800),
+                  ),
                 ),
               ],
             ),
@@ -478,14 +464,8 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
     double max1RM = 0;
     for (final s in sets) {
       if (s.isCompleted && s.reps > 0 && s.weight > 0) {
-        // Brzycki formula: 1RM = Weight / (1.0278 - (0.0278 * Reps))
-        double oneRepMax = s.weight;
-        if (s.reps > 1) {
-          oneRepMax = s.weight / (1.0278 - (0.0278 * s.reps));
-        }
-        if (oneRepMax > max1RM) {
-          max1RM = oneRepMax;
-        }
+        double oneRepMax = s.reps > 1 ? s.weight / (1.0278 - (0.0278 * s.reps)) : s.weight;
+        if (oneRepMax > max1RM) max1RM = oneRepMax;
       }
     }
     return max1RM;
@@ -494,70 +474,55 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
   void _confirmCancelWorkout(BuildContext context) async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: GritTheme.surface,
-        title: const Text('Cancel Workout?'),
-        content: const Text('Are you sure you want to cancel this workout? This will delete all sets logged in this session.'),
+      builder: (_) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.redAccent),
+            SizedBox(width: 8),
+            Text('Cancel Workout?'),
+          ],
+        ),
+        content: const Text('This will delete all sets logged in this session.'),
         actions: [
-          TextButton(
-            child: const Text('Keep Working', style: TextStyle(color: GritTheme.textSecondary)),
-            onPressed: () => Navigator.pop(context, false),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Keep Going')),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, foregroundColor: Colors.white),
-            child: const Text('Cancel Workout'),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
             onPressed: () => Navigator.pop(context, true),
+            child: const Text('Cancel Workout'),
           ),
         ],
       ),
     );
-
     if (confirm == true && context.mounted) {
       await ref.read(activeWorkoutProvider.notifier).cancelWorkout();
-      if (context.mounted) {
-        Navigator.pop(context);
-      }
+      if (context.mounted) Navigator.pop(context);
     }
   }
 
   void _confirmFinishWorkout(BuildContext context) async {
     final activeWorkout = ref.read(activeWorkoutProvider);
-    
-    // Check if there are uncompleted sets
-    bool hasUncompleted = false;
-    for (final ex in activeWorkout.exercises) {
-      if (ex.sets.any((s) => !s.isCompleted)) {
-        hasUncompleted = true;
-        break;
-      }
-    }
+    final hasUncompleted = activeWorkout.exercises.any((ex) => ex.sets.any((s) => !s.isCompleted));
 
     final finish = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: GritTheme.surface,
-        title: const Text('Finish Workout?'),
-        content: Text(hasUncompleted
-            ? 'You have sets that are not marked as completed. Finish anyway?'
-            : 'Are you ready to log this workout and save your progress?'),
+      builder: (_) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.emoji_events_rounded, color: GritTheme.primary),
+            SizedBox(width: 8),
+            Text('Finish Workout?'),
+          ],
+        ),
+        content: Text(hasUncompleted ? 'You have incomplete sets. Finish anyway?' : 'Great session! Ready to save your progress?'),
         actions: [
-          TextButton(
-            child: const Text('Cancel', style: TextStyle(color: GritTheme.textSecondary)),
-            onPressed: () => Navigator.pop(context, false),
-          ),
-          ElevatedButton(
-            child: const Text('Finish'),
-            onPressed: () => Navigator.pop(context, true),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Not Yet')),
+          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Finish!')),
         ],
       ),
     );
-
     if (finish == true && context.mounted) {
       await ref.read(activeWorkoutProvider.notifier).finishWorkout();
-      if (context.mounted) {
-        Navigator.pop(context);
-      }
+      if (context.mounted) Navigator.pop(context);
     }
   }
 
@@ -568,60 +533,53 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: GritTheme.surface,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (context) => StatefulBuilder(
+      builder: (_) => StatefulBuilder(
         builder: (context, setState) {
           final activeWorkout = ref.watch(activeWorkoutProvider);
           final addedIds = activeWorkout.exercises.map((e) => e.exercise.id).toSet();
-          
           return DraggableScrollableSheet(
             initialChildSize: 0.8,
             maxChildSize: 0.95,
             minChildSize: 0.5,
             expand: false,
-            builder: (context, scrollController) {
-              return Column(
-                children: [
-                  const SizedBox(height: 16),
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 5,
-                      decoration: BoxDecoration(color: GritTheme.divider, borderRadius: BorderRadius.circular(10)),
-                    ),
+            builder: (context, scrollController) => Column(
+              children: [
+                const SizedBox(height: 12),
+                Container(width: 40, height: 4, decoration: BoxDecoration(color: GritTheme.divider, borderRadius: BorderRadius.circular(10))),
+                const SizedBox(height: 16),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.search_rounded, color: GritTheme.primary),
+                    SizedBox(width: 8),
+                    Text('Add Exercise', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: ListView.separated(
+                    controller: scrollController,
+                    itemCount: allExercises.length,
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemBuilder: (context, index) {
+                      final ex = allExercises[index];
+                      final isAdded = addedIds.contains(ex.id);
+                      return ListTile(
+                        title: Text(ex.name, style: const TextStyle(fontWeight: FontWeight.w700)),
+                        subtitle: Text('${ex.targetMuscle.name} • ${ex.equipment.name}', style: const TextStyle(fontSize: 12)),
+                        trailing: isAdded
+                            ? const Icon(Icons.check_circle_rounded, color: GritTheme.success)
+                            : const Icon(Icons.add_circle_outline_rounded, color: GritTheme.accent),
+                        onTap: isAdded ? null : () async {
+                          await ref.read(activeWorkoutProvider.notifier).addExercise(ex);
+                          setState(() {});
+                        },
+                      );
+                    },
                   ),
-                  const SizedBox(height: 16),
-                  const Text('Add Exercise', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                  const SizedBox(height: 12),
-                  Expanded(
-                    child: ListView.separated(
-                      controller: scrollController,
-                      itemCount: allExercises.length,
-                      separatorBuilder: (context, index) => const Divider(height: 1),
-                      itemBuilder: (context, index) {
-                        final ex = allExercises[index];
-                        final isAdded = addedIds.contains(ex.id);
-
-                        return ListTile(
-                          title: Text(ex.name),
-                          subtitle: Text('${ex.targetMuscle.name} • ${ex.equipment.name}', style: const TextStyle(fontSize: 12)),
-                          trailing: isAdded
-                              ? const Icon(Icons.check_circle, color: GritTheme.primary)
-                              : const Icon(Icons.add_circle_outline, color: GritTheme.textSecondary),
-                          onTap: isAdded
-                              ? null
-                              : () async {
-                                  await ref.read(activeWorkoutProvider.notifier).addExercise(ex);
-                                  setState(() {});
-                                },
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              );
-            },
+                ),
+              ],
+            ),
           );
         },
       ),
@@ -635,13 +593,7 @@ class ActiveSetInputField extends StatefulWidget {
   final bool isCompleted;
   final ValueChanged<String> onChanged;
 
-  const ActiveSetInputField({
-    super.key,
-    required this.initialValue,
-    required this.isDecimal,
-    required this.isCompleted,
-    required this.onChanged,
-  });
+  const ActiveSetInputField({super.key, required this.initialValue, required this.isDecimal, required this.isCompleted, required this.onChanged});
 
   @override
   State<ActiveSetInputField> createState() => _ActiveSetInputFieldState();
@@ -673,14 +625,14 @@ class _ActiveSetInputFieldState extends State<ActiveSetInputField> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 28,
+      height: 30,
       child: TextField(
         controller: _controller,
         keyboardType: TextInputType.numberWithOptions(decimal: widget.isDecimal),
         textAlign: TextAlign.center,
         style: TextStyle(
           fontSize: 13,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
           color: widget.isCompleted ? GritTheme.textSecondary : GritTheme.textPrimary,
           decoration: widget.isCompleted ? TextDecoration.lineThrough : null,
         ),
@@ -688,21 +640,10 @@ class _ActiveSetInputFieldState extends State<ActiveSetInputField> {
         decoration: InputDecoration(
           contentPadding: EdgeInsets.zero,
           filled: true,
-          fillColor: widget.isCompleted
-              ? Colors.transparent
-              : GritTheme.surfaceLight.withValues(alpha: 0.3),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(6),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(6),
-            borderSide: const BorderSide(color: GritTheme.divider, width: 1),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(6),
-            borderSide: const BorderSide(color: GritTheme.primary, width: 1.5),
-          ),
+          fillColor: widget.isCompleted ? Colors.transparent : GritTheme.surfaceLight,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
+          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: GritTheme.divider, width: 1.5)),
+          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: GritTheme.primary, width: 2)),
         ),
         onChanged: widget.onChanged,
       ),

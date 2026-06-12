@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Grit Gym Tracker',
       debugShowCheckedModeBanner: false,
-      theme: GritTheme.darkTheme,
+      theme: GritTheme.lightTheme,
       home: const MainNavigationHost(),
     );
   }

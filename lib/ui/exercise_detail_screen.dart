@@ -80,12 +80,13 @@ class _ExerciseDetailScreenState extends ConsumerState<ExerciseDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: GritTheme.background,
       appBar: AppBar(
         title: Text(widget.exercise.name),
         actions: [
           if (widget.exercise.isCustom)
             IconButton(
-              icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+              icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
               onPressed: () => _confirmDeleteExercise(context),
             ),
         ],
@@ -108,34 +109,25 @@ class _ExerciseDetailScreenState extends ConsumerState<ExerciseDetailScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Exercise Description
                     if (widget.exercise.description != null && widget.exercise.description!.isNotEmpty) ...[
-                      Text(
-                        'Instructions',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontFamily: 'Outfit'),
-                      ),
+                      _buildSectionLabel('Instructions', Icons.description_rounded),
                       const SizedBox(height: 8),
-                      Text(
-                        widget.exercise.description!,
-                        style: const TextStyle(color: GritTheme.textSecondary, height: 1.4),
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: GritTheme.surface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: GritTheme.divider, width: 1.5),
+                        ),
+                        child: Text(widget.exercise.description!, style: const TextStyle(color: GritTheme.textSecondary, height: 1.5)),
                       ),
-                      const Divider(height: 32),
+                      const SizedBox(height: 24),
                     ],
-
-                    // 1RM Progression Chart
-                    Text(
-                      '1RM Progression (lbs)',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontFamily: 'Outfit'),
-                    ),
+                    _buildSectionLabel('1RM Progression (lbs)', Icons.trending_up_rounded),
                     const SizedBox(height: 12),
                     _build1RMChart(),
-                    const Divider(height: 32),
-
-                    // Set Logs History
-                    Text(
-                      'Workout History',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontFamily: 'Outfit'),
-                    ),
+                    const SizedBox(height: 24),
+                    _buildSectionLabel('Workout History', Icons.history_rounded),
                     const SizedBox(height: 12),
                     _buildHistoryList(),
                   ],
@@ -145,17 +137,38 @@ class _ExerciseDetailScreenState extends ConsumerState<ExerciseDetailScreen> {
     );
   }
 
+  Widget _buildSectionLabel(String text, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: GritTheme.primary),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontFamily: 'Nunito',
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+              color: GritTheme.textPrimary,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildBadge(String label, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        border: Border.all(color: color, width: 1),
-        borderRadius: BorderRadius.circular(20),
+        color: color.withValues(alpha: 0.12),
+        border: Border.all(color: color.withValues(alpha: 0.4), width: 1.5),
+        borderRadius: BorderRadius.circular(24),
       ),
       child: Text(
         label,
-        style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Outfit'),
+        style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w800, fontFamily: 'Nunito'),
       ),
     );
   }
@@ -234,7 +247,7 @@ class _ExerciseDetailScreenState extends ConsumerState<ExerciseDetailScreen> {
             leftTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
-                reservedSize: 36,
+                reservedSize: 40,
                 getTitlesWidget: (value, meta) {
                   return SideTitleWidget(
                     axisSide: meta.axisSide,
