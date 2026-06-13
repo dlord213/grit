@@ -1,0 +1,81 @@
+IMPLEMENTATION PLAN: DYNAMIC PROGRAM GENERATOR (GRIT V2.0)
+============================================================
+Target System: Flutter & Drift/Isar Offline-First Setup
+Design Archetype: Tech-Kawaii / Wii U Aesthetic
+Fonts: Rubik (Weights w800 - w900 for primary headings)
+
+This specification plan guides the refactoring of Grit's "Build My Program" feature from a static, hardcoded exercise text mapper into a rule-based, dynamic slot-filling engine.
+
+------------------------------------------------------------
+1. ARCHITECTURAL EXTENSIONS (THE WIZARD EXPANSION)
+------------------------------------------------------------
+Modify `lib/ui/program_questionnaire_screen.dart` to scale from a 3-step configuration wizard into a responsive 5-step PageView engine.
+
+New State Scheme:
+* int _currentStep = 0;              // Range: 0 to 4
+* int _daysPerWeek = 3;              // (2, 3, 4, 5)
+* String _experienceLevel = 'Beginner'; // ('Beginner', 'Moderate', 'Intermediate')
+* String _coreGoal = 'Hypertrophy';  // ('Strength', 'Hypertrophy', 'Endurance', 'General')
+* Set<String> _targetedFocus = {};   // Multi-select (Chest, Back, Legs, Arms, Shoulders)
+* Set<String> _selectedEquipment = {};// Multi-select matrix
+
+Step Progression Mapping:
+- Step 1: Days per week selection (2x2 Grid via _AnimatedOptionCard)
+- Step 2: Experience Level Selection (Beginner / Moderate / Intermediate cards) -> *NEW*
+- Step 3: Core Training Goal selection (List view layout)
+- Step 4: Muscle Focus Selector (Multi-select pill checklist) -> *NEW*
+- Step 5: Equipment Selector (Validation locks FINISH button if empty)
+
+------------------------------------------------------------
+2. BUSINESS LOGIC ENGINE: MODULAR SLOT-FILLING ALGORITHM
+------------------------------------------------------------
+Refactor `lib/services/program_generator.dart` to stop mapping explicit, case-insensitive string profiles. Instead, apply an automated metadata-driven filter query against local assets.
+
+A. Experience Level Matrix Mapping
+* Beginner Profile:
+  - 4 to 5 exercises per workout template.
+  - 2 to 3 sets per block.
+  - Query Filters: Enforce machine-dominant, high-stability variations. Exclude highly technical, high-fatigue movements (e.g., replace Barbell Back Squat with Leg Press or Goblet Squat variations if equipment allows).
+* Moderate Profile:
+  - 5 to 6 exercises per template.
+  - 3 sets per block.
+  - Query Filters: Balanced distribution of classic compound free-weight lifts and isolation mechanics.
+* Intermediate Profile:
+  - 6 to 7 exercises per template.
+  - 3 to 4 working sets per block.
+  - Query Filters: High-intensity compound movements, barbell progressions, and targeted accessory isolation slots.
+
+B. Prioritized Muscle Group Substitution Logic
+When generating a specific template split day (e.g., Push, Upper, or Full Body), use the user's `_targetedFocus` selections to mutate exercise queues before writing records to the database.
+
+Structure Generation Steps:
+1. Fetch all system exercises matching `_selectedEquipment` tags.
+2. Resolve the workout template framework based on Days/Week (PPL, Upper/Lower, or Full Body).
+3. Populate primary exercise slots (e.g., Upper Body Day gets 2 Chest, 2 Back, 1 Shoulder, 1 Arm slot).
+4. Intercept with Target Focus Logic: If user selected "Chest" as an intensive target:
+   - Re-order exercise index positions to place Chest movements at the front of the sequence (highest energy).
+   - If Intermediate, swap out 1 default Shoulder/Arm minor accessory slot for an additional specialized Chest isolation slot (e.g., Incline Dumbbell Fly or Cable Crossover).
+
+------------------------------------------------------------
+3. WII U INTERACTIVE UX POLISH
+------------------------------------------------------------
+A. Interactive Split Review Screen ("Re-Roll" Stage)
+* Component: Intercept the direct DB write block. Before triggering `db.createTemplate`, output a multi-card split review screen.
+* Aesthetic: Thick outer borders (2.5px), large corner radiuses (24px), and background containers responsive to Theme.of(context).
+* Feature: Place an `Icons.refresh_rounded` button next to each exercise item. Clicking this triggers a localized algorithm to fetch a fresh alternative exercise that shares identical equipment and muscle tags, allowing users to swap out single exercises instantly.
+
+B. Dynamic Gamified Program Naming
+Ditch generic "Full Body A/B" strings. Combine parameters into custom, heavy Rubik-font headers:
+* Beginner + Chest Focus = "Beginner Chest Crusher (Day 1)"
+* Intermediate + Strength = "Elite Power Builder (Split A)"
+
+C. Forging Canvas Takeover
+* Replacing simple loading progress spinners with a custom full-screen animation page while running SQLite transactions.
+* Utilize rotating standard `Icons.auto_awesome_rounded` stars along with bounce animations displaying: "Forging Your Iron Blueprint..."
+
+------------------------------------------------------------
+4. COMPREHENSIVE COMPILATION & QA TASKS
+------------------------------------------------------------
+- Validate keyboard layout padding within Modal Bottom Sheets on small screen viewports (iPhone SE test parameters).
+- Ensure low-contrast container surfaces use explicit theme color mappings (Theme.of(context).colorScheme.onSurface) to prevent text from disappearing under bright lighting environments.
+- Verify unit tests suite tracks position clamping, 1RM formulas, and custom structural template generation checks.

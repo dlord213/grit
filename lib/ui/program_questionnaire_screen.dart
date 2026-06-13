@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../models/enums.dart';
 import '../providers/database_provider.dart';
 import '../services/program_generator.dart';
+import 'forging_canvas_screen.dart';
+import 'split_review_screen.dart';
 import 'theme.dart';
 
 class _AnimatedOptionCard extends StatefulWidget {
@@ -89,12 +92,14 @@ class _ProgramQuestionnaireScreenState
   int _currentStep = 0;
 
   int _daysPerWeek = 3;
+  String _experienceLevel = 'Beginner';
   String _goal = 'Hypertrophy';
+  final Set<String> _targetedFocus = {};
   final Set<String> _selectedEquipment = {};
   bool _isGenerating = false;
 
   void _nextPage() {
-    if (_currentStep < 2) {
+    if (_currentStep < 4) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 350),
         curve: Curves.easeInOut,
@@ -121,20 +126,24 @@ class _ProgramQuestionnaireScreenState
     try {
       final db = ref.read(databaseProvider);
       final generator = ProgramGenerator(db);
-      final count = await generator.generateProgram(
+      final program = await generator.generateProgram(
         daysPerWeek: _daysPerWeek,
         goal: _goal,
+        experienceLevel: _experienceLevel,
+        targetedFocus: _targetedFocus,
         equipment: _selectedEquipment,
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Generated $count workout templates successfully!'),
-            backgroundColor: GritTheme.primary,
+        setState(() {
+          _isGenerating = false;
+        });
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SplitReviewScreen(program: program),
           ),
         );
-        Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
@@ -180,20 +189,7 @@ class _ProgramQuestionnaireScreenState
       ),
       body: SafeArea(
         child: _isGenerating
-            ? const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(color: GritTheme.primary),
-                    SizedBox(height: 20),
-                    Text(
-                      'Assembling templates in database...',
-                      style: TextStyle(
-                          color: GritTheme.textSecondary, fontSize: 16),
-                    ),
-                  ],
-                ),
-              )
+            ? const ForgingCanvas()
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -209,7 +205,9 @@ class _ProgramQuestionnaireScreenState
                       },
                       children: [
                         _buildDaysStep(),
+                        _buildExperienceStep(),
                         _buildGoalStep(),
+                        _buildMuscleFocusStep(),
                         _buildEquipmentStep(),
                       ],
                     ),
@@ -227,7 +225,7 @@ class _ProgramQuestionnaireScreenState
                         else
                           const SizedBox(),
                         ElevatedButton(
-                          onPressed: (_currentStep == 2 &&
+                          onPressed: (_currentStep == 4 &&
                                   _selectedEquipment.isEmpty)
                               ? null
                               : _nextPage,
@@ -236,7 +234,7 @@ class _ProgramQuestionnaireScreenState
                                 horizontal: 40, vertical: 16),
                           ),
                           child:
-                              Text(_currentStep == 2 ? 'FINISH' : 'NEXT'),
+                              Text(_currentStep == 4 ? 'FINISH' : 'NEXT'),
                         ),
                       ],
                     ),
@@ -251,13 +249,13 @@ class _ProgramQuestionnaireScreenState
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
       child: Row(
-        children: List.generate(3, (index) {
+        children: List.generate(5, (index) {
           final isCompleted = index < _currentStep;
           final isCurrent = index == _currentStep;
 
           return Expanded(
             child: Padding(
-              padding: EdgeInsets.only(right: index < 2 ? 8.0 : 0),
+              padding: EdgeInsets.only(right: index < 4 ? 8.0 : 0),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 height: 8,
@@ -498,6 +496,177 @@ class _ProgramQuestionnaireScreenState
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildExperienceStep() {
+    final options = [
+      ('Beginner', Icons.child_care, 'Starting your journey with guided progressions.'),
+      ('Moderate', Icons.fitness_center, 'Balanced compound and accessory work.'),
+      ('Intermediate', Icons.whatshot, 'High-intensity compounds and advanced splits.'),
+    ];
+
+    return _buildStepCard(
+      title: 'What is your experience level?',
+      subtitle: 'This adjusts volume, complexity, and exercise selection.',
+      child: ListView.separated(
+        shrinkWrap: true,
+        itemCount: options.length,
+        separatorBuilder: (context, index) => const SizedBox(height: 12),
+        itemBuilder: (context, index) {
+          final (label, icon, desc) = options[index];
+          final isSelected = _experienceLevel == label;
+
+          return _AnimatedOptionCard(
+            isSelected: isSelected,
+            onTap: () {
+              setState(() {
+                _experienceLevel = label;
+              });
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.all(16),
+              decoration: isSelected
+                  ? _selectedDecoration(GritTheme.primary)
+                  : _unselectedDecoration(),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? GritTheme.primary.withValues(alpha: 0.15)
+                          : Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      icon,
+                      color: isSelected
+                          ? GritTheme.primary
+                          : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          label,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          desc,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildMuscleFocusStep() {
+    final options = [
+      (MuscleFocus.Chest, Icons.fitness_center, 'Pectorals — bench press variations and flyes.'),
+      (MuscleFocus.Back, Icons.accessibility_new, 'Lats and rhomboids — rows and pull-ups.'),
+      (MuscleFocus.Legs, Icons.directions_run, 'Quads, hamstrings, and calves.'),
+      (MuscleFocus.Arms, Icons.sports_martial_arts, 'Biceps and triceps isolation work.'),
+      (MuscleFocus.Shoulders, Icons.accessibility, 'Deltoids — presses and lateral raises.'),
+    ];
+
+    return _buildStepCard(
+      title: 'Any muscle groups you want to prioritize?',
+      subtitle: 'Optional. We will place focused muscles first in each session.',
+      child: GridView.count(
+        crossAxisCount: 2,
+        crossAxisSpacing: 14,
+        mainAxisSpacing: 14,
+        childAspectRatio: 1.2,
+        children: options.map((entry) {
+          final (focus, icon, desc) = entry;
+          final isSelected = _targetedFocus.contains(focus.name);
+
+          return _AnimatedOptionCard(
+            isSelected: isSelected,
+            onTap: () {
+              setState(() {
+                if (isSelected) {
+                  _targetedFocus.remove(focus.name);
+                } else {
+                  _targetedFocus.add(focus.name);
+                }
+              });
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.all(12),
+              decoration: isSelected
+                  ? _selectedDecoration(GritTheme.primary)
+                  : _unselectedDecoration(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? GritTheme.primary.withValues(alpha: 0.15)
+                          : Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      icon,
+                      color: isSelected
+                          ? GritTheme.primary
+                          : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    focus.name,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 13,
+                      color: isSelected
+                          ? GritTheme.primary
+                          : Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    desc,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                      fontSize: 10,
+                      height: 1.2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }

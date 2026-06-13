@@ -189,31 +189,37 @@ void main() {
       await db.close();
     });
 
-    test('Program Generation creates templates and clones exercises', () async {
-      // 1. Manually seed exercises because rootBundle won't be available in standard unit test
+    test('Program Generation creates templates with new signature', () async {
       final testExercises = [
-        'Squat (Barbell)',
-        'Bench Press (Barbell)',
-        'Overhead Press (Barbell)',
-        'Deadlift (Barbell)',
-        'Pullups',
-        'Barbell Row',
-        'Dumbbell Bench Press',
-        'Lateral Raise (Dumbbell)',
-        'Incline Dumbbell Press',
-        'Lying Leg Curl (Machine)',
-        'Leg Press',
-        'Romanian Deadlift (Barbell)',
-        'Barbell Curl',
-        'Tricep Pushdown (Cable)',
+        ('Squat (Barbell)', TargetMuscle.Quads, Equipment.Barbell),
+        ('Bench Press (Barbell)', TargetMuscle.Chest, Equipment.Barbell),
+        ('Overhead Press (Barbell)', TargetMuscle.Shoulders, Equipment.Barbell),
+        ('Deadlift (Barbell)', TargetMuscle.Hamstrings, Equipment.Barbell),
+        ('Pullups', TargetMuscle.Back, Equipment.Bodyweight),
+        ('Barbell Row', TargetMuscle.Back, Equipment.Barbell),
+        ('Dumbbell Bench Press', TargetMuscle.Chest, Equipment.Dumbbell),
+        ('Lateral Raise (Dumbbell)', TargetMuscle.Shoulders, Equipment.Dumbbell),
+        ('Incline Dumbbell Press', TargetMuscle.Chest, Equipment.Dumbbell),
+        ('Lying Leg Curl (Machine)', TargetMuscle.Hamstrings, Equipment.Machine),
+        ('Leg Press', TargetMuscle.Quads, Equipment.Machine),
+        ('Romanian Deadlift (Barbell)', TargetMuscle.Hamstrings, Equipment.Barbell),
+        ('Barbell Curl', TargetMuscle.Biceps, Equipment.Barbell),
+        ('Tricep Pushdown (Cable)', TargetMuscle.Triceps, Equipment.Cables),
+        ('Dumbbell Row', TargetMuscle.Back, Equipment.Dumbbell),
+        ('Dumbbell Curl', TargetMuscle.Biceps, Equipment.Dumbbell),
+        ('Cable Fly', TargetMuscle.Chest, Equipment.Cables),
+        ('Face Pull', TargetMuscle.Shoulders, Equipment.Cables),
+        ('Leg Extension', TargetMuscle.Quads, Equipment.Machine),
+        ('Calf Raise', TargetMuscle.Calves, Equipment.Machine),
+        ('Plank', TargetMuscle.Abs, Equipment.Bodyweight),
       ];
 
-      for (final name in testExercises) {
+      for (final (name, muscle, equip) in testExercises) {
         await db.insertExercise(
           ExercisesCompanion.insert(
             name: name,
-            targetMuscle: TargetMuscle.Chest,
-            equipment: Equipment.Barbell,
+            targetMuscle: muscle,
+            equipment: equip,
             isCustom: const Value(false),
           ),
         );
@@ -221,24 +227,123 @@ void main() {
 
       final generator = ProgramGenerator(db);
 
-      // 2. Generate a 3-Day Hypertrophy program
-      final count = await generator.generateProgram(
+      final program = await generator.generateProgram(
         daysPerWeek: 3,
         goal: 'Hypertrophy',
+        experienceLevel: 'Moderate',
+        targetedFocus: {},
         equipment: {'Full Gym'},
       );
 
-      // Verify that templates were created
-      expect(count, 3);
-      final templates = await db.select(db.workoutTemplates).get();
-      expect(templates.length, 3);
-      expect(templates[0].name, isNotEmpty);
-      expect(templates[1].name, isNotEmpty);
-      expect(templates[2].name, isNotEmpty);
+      expect(program.days.length, 3);
+      expect(program.programName, isNotEmpty);
 
-      // Verify template exercises were linked
-      final tempExs = await db.getTemplateExercises(templates[0].id);
-      expect(tempExs.isNotEmpty, true);
+      for (final day in program.days) {
+        expect(day.exercises.length, greaterThanOrEqualTo(4));
+        expect(day.name, isNotEmpty);
+      }
+    });
+
+    test('Beginner profile produces fewer exercises', () async {
+      final testExercises = [
+        ('Bench Press', TargetMuscle.Chest, Equipment.Barbell),
+        ('Squat', TargetMuscle.Quads, Equipment.Barbell),
+        ('Row', TargetMuscle.Back, Equipment.Barbell),
+        ('Press', TargetMuscle.Shoulders, Equipment.Barbell),
+        ('Curl', TargetMuscle.Biceps, Equipment.Barbell),
+        ('Extension', TargetMuscle.Triceps, Equipment.Cables),
+        ('Leg Press', TargetMuscle.Quads, Equipment.Machine),
+        ('Calf Raise', TargetMuscle.Calves, Equipment.Machine),
+      ];
+
+      for (final (name, muscle, equip) in testExercises) {
+        await db.insertExercise(
+          ExercisesCompanion.insert(
+            name: name,
+            targetMuscle: muscle,
+            equipment: equip,
+            isCustom: const Value(false),
+          ),
+        );
+      }
+
+      final generator = ProgramGenerator(db);
+
+      final beginnerProgram = await generator.generateProgram(
+        daysPerWeek: 2,
+        goal: 'Hypertrophy',
+        experienceLevel: 'Beginner',
+        targetedFocus: {},
+        equipment: {'Full Gym'},
+      );
+
+      final intermediateProgram = await generator.generateProgram(
+        daysPerWeek: 2,
+        goal: 'Hypertrophy',
+        experienceLevel: 'Intermediate',
+        targetedFocus: {},
+        equipment: {'Full Gym'},
+      );
+
+      final beginnerTotal = beginnerProgram.days.fold<int>(
+        0, (sum, day) => sum + day.exercises.length);
+      final intermediateTotal = intermediateProgram.days.fold<int>(
+        0, (sum, day) => sum + day.exercises.length);
+
+      expect(beginnerTotal, lessThanOrEqualTo(intermediateTotal));
+    });
+
+    test('Dynamic naming produces correct format', () {
+      final generator = ProgramGenerator(db);
+
+      final name1 = generator.generateProgramName('Beginner', {'Chest'}, 3);
+      expect(name1, contains('Beginner'));
+      expect(name1, contains('Chest'));
+      expect(name1, contains('Split'));
+
+      final name2 = generator.generateProgramName('Intermediate', {}, 5);
+      expect(name2, contains('Elite'));
+      expect(name2, contains('Cycle'));
+
+      final name3 = generator.generateProgramName('Moderate', {'Back'}, 4);
+      expect(name3, contains('Power'));
+      expect(name3, contains('Back'));
+    });
+
+    test('Equipment filtering works correctly', () async {
+      final testExercises = [
+        ('Barbell Press', TargetMuscle.Chest, Equipment.Barbell),
+        ('Dumbbell Press', TargetMuscle.Chest, Equipment.Dumbbell),
+        ('Push-up', TargetMuscle.Chest, Equipment.Bodyweight),
+        ('Cable Fly', TargetMuscle.Chest, Equipment.Cables),
+      ];
+
+      for (final (name, muscle, equip) in testExercises) {
+        await db.insertExercise(
+          ExercisesCompanion.insert(
+            name: name,
+            targetMuscle: muscle,
+            equipment: equip,
+            isCustom: const Value(false),
+          ),
+        );
+      }
+
+      final generator = ProgramGenerator(db);
+
+      final bodyweightOnly = await generator.generateProgram(
+        daysPerWeek: 2,
+        goal: 'Hypertrophy',
+        experienceLevel: 'Beginner',
+        targetedFocus: {},
+        equipment: {'Bodyweight'},
+      );
+
+      for (final day in bodyweightOnly.days) {
+        for (final slot in day.exercises) {
+          expect(slot.exercise.equipment, Equipment.Bodyweight);
+        }
+      }
     });
   });
 }
