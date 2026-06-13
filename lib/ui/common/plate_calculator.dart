@@ -51,17 +51,17 @@ class _PlateCalculatorModalState extends State<PlateCalculatorModal> {
 
   Color _getPlateColor(double plate) {
     if (_isLbs) {
-      if (plate >= 45) return Colors.redAccent;
-      if (plate >= 35) return Colors.blueAccent;
-      if (plate >= 25) return Colors.yellow.shade700;
-      if (plate >= 10) return Colors.greenAccent.shade700;
+      if (plate >= 45) return GritTheme.danger;
+      if (plate >= 35) return GritTheme.accent;
+      if (plate >= 25) return GritTheme.accentWarm;
+      if (plate >= 10) return GritTheme.success;
       if (plate >= 5) return Colors.orangeAccent;
       return Colors.white54;
     } else {
-      if (plate >= 25) return Colors.redAccent;
-      if (plate >= 20) return Colors.blueAccent;
-      if (plate >= 15) return Colors.yellow.shade700;
-      if (plate >= 10) return Colors.greenAccent.shade700;
+      if (plate >= 25) return GritTheme.danger;
+      if (plate >= 20) return GritTheme.accent;
+      if (plate >= 15) return GritTheme.accentWarm;
+      if (plate >= 10) return GritTheme.success;
       if (plate >= 5) return Colors.orangeAccent;
       return Colors.white54;
     }
@@ -88,8 +88,8 @@ class _PlateCalculatorModalState extends State<PlateCalculatorModal> {
         top: 20,
         bottom: MediaQuery.of(context).viewInsets.bottom + 30,
       ),
-      decoration: const BoxDecoration(
-        color: GritTheme.surface,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
@@ -171,7 +171,7 @@ class _PlateCalculatorModalState extends State<PlateCalculatorModal> {
             children: [
               const Text('Barbell Weight', style: TextStyle(color: GritTheme.textSecondary)),
               DropdownButton<double>(
-                dropdownColor: GritTheme.surface,
+                dropdownColor: Theme.of(context).colorScheme.surface,
                 value: _barWeight,
                 items: (_isLbs ? [45.0, 35.0, 15.0] : [20.0, 15.0, 10.0])
                     .map((val) => DropdownMenuItem(
@@ -194,7 +194,7 @@ class _PlateCalculatorModalState extends State<PlateCalculatorModal> {
             const Center(
               child: Text(
                 'Enter a weight higher than the bar weight.',
-                style: TextStyle(color: Colors.redAccent),
+                style: TextStyle(color: GritTheme.danger),
               ),
             )
           else ...[
@@ -210,9 +210,9 @@ class _PlateCalculatorModalState extends State<PlateCalculatorModal> {
             Container(
               height: 100,
               decoration: BoxDecoration(
-                color: GritTheme.background,
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: GritTheme.divider, width: 1.5),
+                border: Border.all(color: Theme.of(context).dividerColor, width: 1.5),
               ),
               child: Stack(
                 alignment: Alignment.centerLeft,
@@ -223,7 +223,7 @@ class _PlateCalculatorModalState extends State<PlateCalculatorModal> {
                     right: 20,
                     child: Container(
                       height: 12,
-                      color: Colors.blueGrey.shade600,
+                      color: GritTheme.darkSurfaceMid,
                     ),
                   ),
                   // Collar stop
@@ -233,7 +233,7 @@ class _PlateCalculatorModalState extends State<PlateCalculatorModal> {
                       width: 14,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade400,
+                        color: GritTheme.darkSurfaceLight,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
@@ -255,15 +255,15 @@ class _PlateCalculatorModalState extends State<PlateCalculatorModal> {
                           decoration: BoxDecoration(
                             color: _getPlateColor(plate),
                             borderRadius: BorderRadius.circular(3),
-                            border: Border.all(color: Colors.black45, width: 1),
+                            border: Border.all(color: GritTheme.darkDivider.withValues(alpha: 0.5), width: 1),
                           ),
                           alignment: Alignment.center,
                           child: RotatedBox(
                             quarterTurns: 3,
                             child: Text(
                               plate.toString().replaceAll('.0', ''),
-                              style: const TextStyle(
-                                color: Colors.black,
+                              style: TextStyle(
+                                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : GritTheme.textPrimary,
                                 fontSize: 8,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -290,7 +290,7 @@ class _PlateCalculatorModalState extends State<PlateCalculatorModal> {
                     backgroundColor: _getPlateColor(entry.key),
                     child: Text(
                       entry.value.toString(),
-                      style: const TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : GritTheme.textPrimary, fontSize: 10, fontWeight: FontWeight.bold),
                     ),
                   ),
                   label: Text('${entry.key} ${_isLbs ? "lbs" : "kg"}'),

@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:drift/drift.dart' as drift;
-import '../database/database.dart';
-import '../models/enums.dart';
 import '../providers/database_provider.dart';
+import '../providers/theme_provider.dart';
+import '../providers/weight_unit_provider.dart';
 import 'theme.dart';
+import 'profile_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -98,7 +98,7 @@ class SettingsScreen extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Backup failed: $e'),
-            backgroundColor: Colors.redAccent,
+            backgroundColor: GritTheme.danger,
           ),
         );
       }
@@ -109,10 +109,10 @@ class SettingsScreen extends ConsumerWidget {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: GritTheme.surface,
-        title: const Text(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        title: Text(
           'Reset Database?',
-          style: TextStyle(color: Colors.redAccent),
+          style: TextStyle(color: GritTheme.danger),
         ),
         content: const Text(
           'This will delete all templates, custom exercises, and logged workout history. This action cannot be undone.',
@@ -127,8 +127,8 @@ class SettingsScreen extends ConsumerWidget {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-              foregroundColor: Colors.white,
+              backgroundColor: GritTheme.danger,
+              foregroundColor: GritTheme.onPrimary,
             ),
             child: const Text('Reset'),
             onPressed: () => Navigator.pop(context, true),
@@ -153,7 +153,7 @@ class SettingsScreen extends ConsumerWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Reset failed: $e'),
-              backgroundColor: Colors.redAccent,
+              backgroundColor: GritTheme.danger,
             ),
           );
         }
@@ -164,7 +164,7 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: GritTheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Row(
           mainAxisSize: MainAxisSize.min,
@@ -179,6 +179,26 @@ class SettingsScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           children: [
+            // Appearance Section
+            _buildSectionHeader('APPEARANCE'),
+            const SizedBox(height: 12),
+            _buildSettingsTile(
+              context,
+              'Profile',
+              'View & edit your Grit-tar and biometrics',
+              Icons.person_rounded,
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProfileScreen()),
+              ),
+            ),
+            const SizedBox(height: 12),
+            _buildThemeToggle(context, ref),
+            const SizedBox(height: 12),
+            _buildWeightUnitToggle(context, ref),
+            const SizedBox(height: 8),
+
+            const SizedBox(height: 12),
             // Backup and Restore Section
             _buildSectionHeader('Data Management'),
             const SizedBox(height: 12),
@@ -189,6 +209,7 @@ class SettingsScreen extends ConsumerWidget {
               Icons.backup_outlined,
               () => _exportBackup(context, ref),
             ),
+            const SizedBox(height: 12),
             _buildSettingsTile(
               context,
               'Reset Application',
@@ -196,57 +217,6 @@ class SettingsScreen extends ConsumerWidget {
               Icons.delete_forever_outlined,
               () => _resetDatabase(context, ref),
               isDestructive: true,
-            ),
-            const Divider(height: 40),
-            _buildSectionHeader('ABOUT'),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: GritTheme.surface,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: GritTheme.divider, width: 1.5),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    children: [
-                      ShaderMask(
-                        shaderCallback: (bounds) =>
-                            GritTheme.primaryGradient.createShader(bounds),
-                        child: const Text(
-                          'Grit Gym Tracker',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w900,
-                            fontSize: 18,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      const Icon(Icons.flash_on_rounded, color: GritTheme.primary, size: 18),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'Version 1.0.0',
-                    style: TextStyle(
-                      color: GritTheme.textSecondary,
-                      fontSize: 13,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'An offline-first, privacy-respecting gym progressive overload logger designed for powerlifters and bodybuilders.',
-                    style: TextStyle(
-                      color: GritTheme.textSecondary,
-                      fontSize: 13,
-                      height: 1.5,
-                    ),
-                  ),
-                ],
-              ),
             ),
           ],
         ),
@@ -258,11 +228,148 @@ class SettingsScreen extends ConsumerWidget {
     return Text(
       title,
       style: const TextStyle(
-        fontFamily: 'Nunito',
+        fontFamily: 'Rubik',
         fontWeight: FontWeight.w800,
         fontSize: 13,
         color: GritTheme.primary,
         letterSpacing: 1.0,
+      ),
+    );
+  }
+
+  Widget _buildThemeToggle(BuildContext context, WidgetRef ref) {
+    final currentMode = ref.watch(themeModeProvider);
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Theme.of(context).dividerColor, width: 1.5),
+      ),
+      child: Row(
+        children: [
+          _themeOption(
+            ref,
+            Icons.brightness_auto_rounded,
+            'System',
+            ThemeMode.system,
+            currentMode,
+          ),
+          _themeOption(
+            ref,
+            Icons.light_mode_rounded,
+            'Light',
+            ThemeMode.light,
+            currentMode,
+          ),
+          _themeOption(
+            ref,
+            Icons.dark_mode_rounded,
+            'Dark',
+            ThemeMode.dark,
+            currentMode,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWeightUnitToggle(BuildContext context, WidgetRef ref) {
+    final currentUnit = ref.watch(weightUnitProvider);
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Theme.of(context).dividerColor, width: 1.5),
+      ),
+      child: Row(
+        children: [
+          _unitOption(ref, 'LBS', WeightUnit.lbs, currentUnit),
+          _unitOption(ref, 'KG', WeightUnit.kg, currentUnit),
+        ],
+      ),
+    );
+  }
+
+  Widget _unitOption(WidgetRef ref, String label, WeightUnit unit, WeightUnit current) {
+    final isSelected = current == unit;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => ref.read(weightUnitProvider.notifier).setUnit(unit),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: isSelected ? GritTheme.primary : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                unit == WeightUnit.lbs ? Icons.fitness_center_rounded : Icons.monitor_weight_outlined,
+                size: 16,
+                color: isSelected ? GritTheme.onPrimary : GritTheme.textSecondary,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                  color: isSelected ? GritTheme.onPrimary : GritTheme.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _themeOption(
+    WidgetRef ref,
+    IconData icon,
+    String label,
+    ThemeMode mode,
+    ThemeMode current,
+  ) {
+    final isSelected = current == mode;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => ref.read(themeModeProvider.notifier).setMode(mode),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: isSelected ? GritTheme.primary : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 16,
+                color: isSelected
+                    ? GritTheme.onPrimary
+                    : GritTheme.textSecondary,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                  color: isSelected
+                      ? GritTheme.onPrimary
+                      : GritTheme.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -275,18 +382,18 @@ class SettingsScreen extends ConsumerWidget {
     VoidCallback onTap, {
     bool isDestructive = false,
   }) {
-    final color = isDestructive ? Colors.redAccent : GritTheme.primary;
+    final color = isDestructive ? GritTheme.danger : GritTheme.primary;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: GritTheme.surface,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isDestructive
-                ? Colors.redAccent.withValues(alpha: 0.2)
-                : GritTheme.divider,
+                ? GritTheme.danger.withValues(alpha: 0.2)
+                : Theme.of(context).dividerColor,
             width: 1.5,
           ),
           boxShadow: [
@@ -317,8 +424,8 @@ class SettingsScreen extends ConsumerWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w800,
                       color: isDestructive
-                          ? Colors.redAccent
-                          : GritTheme.textPrimary,
+                          ? GritTheme.danger
+                          : Theme.of(context).colorScheme.onSurface,
                       fontSize: 15,
                     ),
                   ),

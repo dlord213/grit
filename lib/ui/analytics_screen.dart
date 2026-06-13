@@ -124,7 +124,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: GritTheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Row(
           mainAxisSize: MainAxisSize.min,
@@ -177,11 +177,11 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(
-              fontFamily: 'Nunito',
+            style: TextStyle(
+              fontFamily: 'Rubik',
               fontSize: 17,
               fontWeight: FontWeight.w800,
-              color: GritTheme.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             overflow: TextOverflow.ellipsis,
           ),
@@ -213,9 +213,9 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: GritTheme.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: GritTheme.divider, width: 1.5),
+        border: Border.all(color: Theme.of(context).dividerColor, width: 1.5),
         boxShadow: [BoxShadow(color: color.withValues(alpha: 0.08), blurRadius: 12, offset: const Offset(0, 4))],
       ),
       child: Column(
@@ -227,7 +227,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
               Expanded(
                 child: Text(
                   label,
-                  style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12),
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -238,7 +238,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
           const SizedBox(height: 8),
           Text(
             value,
-            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 24, fontFamily: 'Outfit'),
+            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, fontFamily: 'Rubik', color: Theme.of(context).colorScheme.onSurface),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -256,9 +256,9 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
       height: 180,
       padding: const EdgeInsets.only(right: 20, left: 10, top: 16, bottom: 8),
       decoration: BoxDecoration(
-        color: GritTheme.surface.withValues(alpha: 0.6),
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: GritTheme.divider),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: BarChart(
         BarChartData(
@@ -275,7 +275,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                 reservedSize: 28,
                 getTitlesWidget: (value, meta) {
                   if (value == value.toInt().toDouble()) {
-                    return Text('${value.toInt()}', style: const TextStyle(color: GritTheme.textSecondary, fontSize: 10));
+                    return Text('${value.toInt()}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 10));
                   }
                   return const SizedBox();
                 },
@@ -290,7 +290,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                     final label = idx == 5 ? 'This Wk' : '${5 - idx}w ago';
                     return SideTitleWidget(
                       axisSide: meta.axisSide,
-                      child: Text(label, style: const TextStyle(color: GritTheme.textSecondary, fontSize: 9)),
+                      child: Text(label, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 9)),
                     );
                   }
                   return const SizedBox();
@@ -324,18 +324,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
     }
 
     final totalSets = _muscleGroupCounts.values.reduce((a, b) => a + b);
-    final List<Color> colors = [
-      Colors.redAccent,
-      Colors.blueAccent,
-      Colors.greenAccent.shade700,
-      Colors.yellow.shade700,
-      Colors.orangeAccent,
-      Colors.purpleAccent,
-      Colors.tealAccent.shade700,
-      Colors.pinkAccent,
-      Colors.indigoAccent,
-      Colors.cyanAccent,
-    ];
+    final colors = GritTheme.chartPalette;
 
     int colorIdx = 0;
     final List<PieChartSectionData> sections = [];
@@ -352,7 +341,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
           value: count.toDouble(),
           title: '${percent.toStringAsFixed(0)}%',
           radius: 40,
-          titleStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black),
+          titleStyle: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
         ),
       );
 
@@ -367,7 +356,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
               Flexible(
                 child: Text(
                   '$muscle ($count sets)',
-                  style: const TextStyle(fontSize: 12, color: GritTheme.textSecondary),
+                  style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -380,9 +369,9 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: GritTheme.surface.withValues(alpha: 0.6),
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: GritTheme.divider),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         children: [
@@ -421,9 +410,9 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
           expand: false,
           builder: (context, scrollController) {
             return Container(
-              decoration: const BoxDecoration(
-                color: GritTheme.background,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
               ),
               child: Column(
                 children: [
@@ -432,7 +421,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: GritTheme.divider,
+                      color: Theme.of(context).dividerColor,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -443,13 +432,13 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                       children: [
                         const Icon(Icons.fitness_center_rounded, color: GritTheme.primary),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           'Choose Exercise',
                           style: TextStyle(
-                            fontFamily: 'Nunito',
+                            fontFamily: 'Rubik',
                             fontSize: 18,
                             fontWeight: FontWeight.w900,
-                            color: GritTheme.textPrimary,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ],
@@ -467,10 +456,10 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                         return Container(
                           margin: const EdgeInsets.only(bottom: 8),
                           decoration: BoxDecoration(
-                            color: isSelected ? GritTheme.primary.withValues(alpha: 0.08) : GritTheme.surface,
+                            color: isSelected ? GritTheme.primary.withValues(alpha: 0.08) : Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: isSelected ? GritTheme.primary : GritTheme.divider,
+                              color: isSelected ? GritTheme.primary : Theme.of(context).dividerColor,
                               width: isSelected ? 2 : 1.5,
                             ),
                           ),
@@ -480,15 +469,15 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                               ex.name,
                               style: TextStyle(
                                 fontWeight: FontWeight.w800,
-                                color: isSelected ? GritTheme.primary : GritTheme.textPrimary,
+                                color: isSelected ? GritTheme.primary : Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                             subtitle: Text(
                               '${ex.targetMuscle.name} • ${ex.equipment.name}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 12,
-                                color: GritTheme.textSecondary,
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                               ),
                             ),
                             trailing: isSelected
@@ -526,9 +515,9 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              color: GritTheme.surface,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: GritTheme.divider, width: 1.5),
+              border: Border.all(color: Theme.of(context).dividerColor, width: 1.5),
             ),
             child: Row(
               children: [
@@ -538,20 +527,20 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Select Exercise',
-                        style: TextStyle(color: GritTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.w600),
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 11, fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         _selectedExercise?.name ?? 'Select an exercise...',
-                        style: const TextStyle(color: GritTheme.textPrimary, fontSize: 14, fontWeight: FontWeight.w800),
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14, fontWeight: FontWeight.w800),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
-                const Icon(Icons.keyboard_arrow_down_rounded, color: GritTheme.textSecondary),
+                Icon(Icons.keyboard_arrow_down_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
               ],
             ),
           ),
@@ -567,15 +556,15 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
       return Container(
         height: 160,
         decoration: BoxDecoration(
-          color: GritTheme.surface.withValues(alpha: 0.3),
+          color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: GritTheme.divider),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
-        child: const Center(
+        child: Center(
           child: Text(
             'Log at least 2 sessions for this exercise to view progression.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: GritTheme.textSecondary, fontSize: 13),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 13),
           ),
         ),
       );
@@ -593,9 +582,9 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
       height: 180,
       padding: const EdgeInsets.only(right: 24, left: 8, top: 12, bottom: 8),
       decoration: BoxDecoration(
-        color: GritTheme.surface.withValues(alpha: 0.6),
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: GritTheme.divider),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: LineChart(
         LineChartData(
@@ -604,7 +593,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
           gridData: FlGridData(
             show: true,
             drawVerticalLine: false,
-            getDrawingHorizontalLine: (value) => const FlLine(color: GritTheme.divider, strokeWidth: 1),
+            getDrawingHorizontalLine: (value) => FlLine(color: Theme.of(context).dividerColor, strokeWidth: 1),
           ),
           titlesData: FlTitlesData(
             show: true,
@@ -623,7 +612,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                         axisSide: meta.axisSide,
                         child: Text(
                           DateFormat('MM/dd').format(date),
-                          style: const TextStyle(color: GritTheme.textSecondary, fontSize: 10),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 10),
                         ),
                       );
                     }
@@ -680,15 +669,15 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
     return Container(
       height: 100,
       decoration: BoxDecoration(
-        color: GritTheme.surface.withValues(alpha: 0.3),
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: GritTheme.divider),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Center(
         child: Text(
           label,
           textAlign: TextAlign.center,
-          style: const TextStyle(color: GritTheme.textSecondary, fontSize: 13),
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 13),
         ),
       ),
     );

@@ -142,6 +142,36 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     _sessionTimer = null;
   }
 
+  /// Persists session metadata (name, notes) to the database immediately.
+  /// Called on every name/notes change and on app lifecycle transitions.
+  Future<void> autoSaveSession() async {
+    if (state.sessionId == null) return;
+    await (_db.update(_db.workoutSessions)..where((t) => t.id.equals(state.sessionId!))).write(
+      WorkoutSessionsCompanion(
+        name: Value(state.name),
+        notes: Value(state.notes),
+      ),
+    );
+  }
+
+  /// Called when the app is paused (backgrounded / screen off).
+  /// Flushes in-memory state to DB and stops the duration timer to save resources.
+  void onAppPaused() {
+    autoSaveSession();
+    _stopDurationTimer();
+  }
+
+  /// Called when the app resumes from background.
+  /// Restarts the duration timer and immediately emits the correct elapsed time
+  /// using system timestamps (not relying on periodic ticks that may have stalled).
+  void onAppResumed() {
+    if (state.hasActiveSession && state.startTime != null) {
+      final elapsed = DateTime.now().difference(state.startTime!);
+      _durationStreamController.add(elapsed);
+      _startDurationTimer();
+    }
+  }
+
   /// Checks if there's a workout session that wasn't closed (i.e. endTime is null)
   Future<void> _checkForInProgressSession() async {
     final allSessions = await _db.getAllWorkoutSessions();
@@ -442,14 +472,16 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     state = state.copyWith(exercises: updatedExercises);
   }
 
-  /// Update workout notes
+  /// Update workout notes and persist to DB
   void updateNotes(String notes) {
     state = state.copyWith(notes: notes);
+    autoSaveSession();
   }
 
-  /// Update workout name
+  /// Update workout name and persist to DB
   void updateName(String name) {
     state = state.copyWith(name: name);
+    autoSaveSession();
   }
 
   /// Finish the active workout

@@ -89,6 +89,19 @@ class RestTimerNotifier extends StateNotifier<RestTimerState> {
     }
   }
 
+  /// Called when the app resumes from background.
+  /// Recalculates remaining time from system clock to correct any drift
+  /// that occurred while the periodic timer was not firing.
+  void onAppResumed() {
+    if (!state.isActive || state.targetTime == null) return;
+    final remaining = state.targetTime!.difference(DateTime.now()).inSeconds;
+    if (remaining <= 0) {
+      stopTimer();
+    } else {
+      state = state.copyWith(remainingSeconds: remaining);
+    }
+  }
+
   @override
   void dispose() {
     _timer?.cancel();

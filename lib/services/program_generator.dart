@@ -5,17 +5,14 @@ class ProgramGenerator {
 
   ProgramGenerator(this.db);
 
-  /// Generates a program template based on questionnaire input.
-  /// Returns the number of templates created.
   Future<int> generateProgram({
     required int daysPerWeek,
-    required String goal, // 'Hypertrophy', 'Strength', 'General Fitness'
-    required String equipment, // 'Full Gym', 'Home Gym', 'Dumbbells Only'
+    required String goal,
+    required Set<String> equipment,
   }) async {
-    // 1. Determine program layout
-    final List<Map<String, dynamic>> programStructure = _getProgramStructure(daysPerWeek, goal, equipment);
+    final List<Map<String, dynamic>> programStructure =
+        _getProgramStructure(daysPerWeek, goal, equipment);
 
-    // 2. Query all available exercises from DB to match by name
     final allExercises = await db.getAllExercises();
 
     int templatesCreated = 0;
@@ -23,20 +20,19 @@ class ProgramGenerator {
     for (final dayConfig in programStructure) {
       final String templateName = dayConfig['name'] as String;
       final String templateDesc = dayConfig['description'] as String;
-      final List<String> targetExerciseNames = List<String>.from(dayConfig['exercises'] as List);
+      final List<String> targetExerciseNames =
+          List<String>.from(dayConfig['exercises'] as List);
 
-      // Map target exercise names to actual Exercise records
       final List<int> matchedExerciseIds = [];
       for (final name in targetExerciseNames) {
-        // Find exact match or partial match or fallback
         final match = allExercises.firstWhere(
-          (e) => e.name.toLowerCase() == name.toLowerCase() ||
-                 e.name.toLowerCase().contains(name.toLowerCase()),
+          (e) =>
+              e.name.toLowerCase() == name.toLowerCase() ||
+              e.name.toLowerCase().contains(name.toLowerCase()),
           orElse: () {
-            // Find any fallback exercise matching the name as substring
             return allExercises.firstWhere(
               (e) => name.toLowerCase().contains(e.name.toLowerCase()),
-              orElse: () => allExercises.first, // Fallback to first exercise if completely not found
+              orElse: () => allExercises.first,
             );
           },
         );
@@ -52,16 +48,27 @@ class ProgramGenerator {
     return templatesCreated;
   }
 
-  List<Map<String, dynamic>> _getProgramStructure(int days, String goal, String equipment) {
-    final bool dumbbellsOnly = equipment == 'Dumbbells Only';
+  List<Map<String, dynamic>> _getProgramStructure(
+    int days,
+    String goal,
+    Set<String> equipment,
+  ) {
+    final bool bodyweightOnly =
+        equipment.length == 1 && equipment.contains('Bodyweight');
+    final bool dumbbellsOnly =
+        equipment.length == 1 && equipment.contains('Dumbbell Only');
+
+    if (bodyweightOnly) {
+      return _getBodyweightStructure(days);
+    }
 
     if (days == 2) {
-      // 2-Day Split: Full Body A / Full Body B
       if (dumbbellsOnly) {
         return [
           {
             'name': '2-Day Dumbbell Full Body A',
-            'description': 'Full body strength session focusing on dumbbell exercises.',
+            'description':
+                'Full body strength session focusing on dumbbell exercises.',
             'exercises': [
               'Goblet Squat',
               'Dumbbell Bench Press',
@@ -73,7 +80,8 @@ class ProgramGenerator {
           },
           {
             'name': '2-Day Dumbbell Full Body B',
-            'description': 'Full body accessory session targeting lower body hinge and upper pulls.',
+            'description':
+                'Full body accessory session targeting lower body hinge and upper pulls.',
             'exercises': [
               'Romanian Deadlift (Dumbbell)',
               'Dumbbell Lunges',
@@ -88,7 +96,8 @@ class ProgramGenerator {
         return [
           {
             'name': '2-Day Full Body A',
-            'description': 'Heavy compound lifting session for maximum full body recruitment.',
+            'description':
+                'Heavy compound lifting session for maximum full body recruitment.',
             'exercises': [
               'Barbell Back Squat',
               'Barbell Bench Press',
@@ -113,9 +122,7 @@ class ProgramGenerator {
         ];
       }
     } else if (days == 3) {
-      // 3-Day Split: Push / Pull / Legs or Full Body
       if (goal == 'Strength') {
-        // 3-Day Power/Strength Full Body (Squat, Bench, Deadlift focus)
         return [
           {
             'name': '3-Day Power A (Squat Focus)',
@@ -152,12 +159,12 @@ class ProgramGenerator {
           }
         ];
       } else {
-        // Push / Pull / Legs
         if (dumbbellsOnly) {
           return [
             {
               'name': '3-Day Dumbbell Push',
-              'description': 'Dumbbell-only push day targeting chest, shoulders, and triceps.',
+              'description':
+                  'Dumbbell-only push day targeting chest, shoulders, and triceps.',
               'exercises': [
                 'Dumbbell Bench Press',
                 'Dumbbell Shoulder Press',
@@ -168,7 +175,8 @@ class ProgramGenerator {
             },
             {
               'name': '3-Day Dumbbell Pull',
-              'description': 'Dumbbell-only pull day targeting back, biceps, and rear shoulders.',
+              'description':
+                  'Dumbbell-only pull day targeting back, biceps, and rear shoulders.',
               'exercises': [
                 'Dumbbell Row',
                 'Dumbbell Rear Delt Fly',
@@ -179,7 +187,8 @@ class ProgramGenerator {
             },
             {
               'name': '3-Day Dumbbell Legs',
-              'description': 'Dumbbell-only lower body day focusing on quads, hamstrings, and calves.',
+              'description':
+                  'Dumbbell-only lower body day focusing on quads, hamstrings, and calves.',
               'exercises': [
                 'Goblet Squat',
                 'Romanian Deadlift (Dumbbell)',
@@ -193,7 +202,8 @@ class ProgramGenerator {
           return [
             {
               'name': '3-Day PPL - Push',
-              'description': 'Push day targeting Chest, Shoulders, and Triceps.',
+              'description':
+                  'Push day targeting Chest, Shoulders, and Triceps.',
               'exercises': [
                 'Barbell Bench Press',
                 'Dumbbell Shoulder Press',
@@ -215,7 +225,8 @@ class ProgramGenerator {
             },
             {
               'name': '3-Day PPL - Legs',
-              'description': 'Lower body day targeting Quads, Hamstrings, and Calves.',
+              'description':
+                  'Lower body day targeting Quads, Hamstrings, and Calves.',
               'exercises': [
                 'Barbell Back Squat',
                 'Romanian Deadlift (Barbell)',
@@ -228,7 +239,6 @@ class ProgramGenerator {
         }
       }
     } else if (days == 4) {
-      // 4-Day Split: Upper / Lower A & B
       if (dumbbellsOnly) {
         return [
           {
@@ -254,7 +264,8 @@ class ProgramGenerator {
           },
           {
             'name': '4-Day Dumbbell Upper B',
-            'description': 'Dumbbell shoulder press and pull-up focus upper body.',
+            'description':
+                'Dumbbell shoulder press and pull-up focus upper body.',
             'exercises': [
               'Dumbbell Shoulder Press',
               'Dumbbell Row',
@@ -325,33 +336,57 @@ class ProgramGenerator {
         ];
       }
     } else {
-      // 5-Day Split: Push / Pull / Legs / Upper / Lower
       if (dumbbellsOnly) {
         return [
           {
             'name': '5-Day Dumbbell Push',
             'description': 'Push day targeting Chest and Triceps.',
-            'exercises': ['Dumbbell Bench Press', 'Dumbbell Shoulder Press', 'Dumbbell Lateral Raise', 'Dumbbell Kickback'],
+            'exercises': [
+              'Dumbbell Bench Press',
+              'Dumbbell Shoulder Press',
+              'Dumbbell Lateral Raise',
+              'Dumbbell Kickback',
+            ],
           },
           {
             'name': '5-Day Dumbbell Pull',
             'description': 'Pull day targeting Back and Biceps.',
-            'exercises': ['Dumbbell Row', 'Dumbbell Rear Delt Fly', 'Dumbbell Curl', 'Hammer Curl'],
+            'exercises': [
+              'Dumbbell Row',
+              'Dumbbell Rear Delt Fly',
+              'Dumbbell Curl',
+              'Hammer Curl',
+            ],
           },
           {
             'name': '5-Day Dumbbell Legs',
             'description': 'Lower body focus.',
-            'exercises': ['Goblet Squat', 'Romanian Deadlift (Dumbbell)', 'Dumbbell Lunges', 'Plank'],
+            'exercises': [
+              'Goblet Squat',
+              'Romanian Deadlift (Dumbbell)',
+              'Dumbbell Lunges',
+              'Plank',
+            ],
           },
           {
             'name': '5-Day Dumbbell Upper',
             'description': 'Upper body accessory pump.',
-            'exercises': ['Dumbbell Bench Press', 'Dumbbell Row', 'Dumbbell Shoulder Press', 'Dumbbell Curl'],
+            'exercises': [
+              'Dumbbell Bench Press',
+              'Dumbbell Row',
+              'Dumbbell Shoulder Press',
+              'Dumbbell Curl',
+            ],
           },
           {
             'name': '5-Day Dumbbell Lower',
             'description': 'Lower body accessory pump.',
-            'exercises': ['Romanian Deadlift (Dumbbell)', 'Goblet Squat', 'Step-ups', 'Russian Twist'],
+            'exercises': [
+              'Romanian Deadlift (Dumbbell)',
+              'Goblet Squat',
+              'Step-ups',
+              'Russian Twist',
+            ],
           }
         ];
       } else {
@@ -359,30 +394,227 @@ class ProgramGenerator {
           {
             'name': '5-Day PHAT - Upper Power',
             'description': 'Heavy upper body compound power.',
-            'exercises': ['Barbell Bench Press', 'Barbell Row', 'Barbell Overhead Press', 'Lat Pulldown', 'Barbell Curl'],
+            'exercises': [
+              'Barbell Bench Press',
+              'Barbell Row',
+              'Barbell Overhead Press',
+              'Lat Pulldown',
+              'Barbell Curl',
+            ],
           },
           {
             'name': '5-Day PHAT - Lower Power',
             'description': 'Heavy lower body compound power.',
-            'exercises': ['Barbell Back Squat', 'Romanian Deadlift (Barbell)', 'Leg Press', 'Standing Calf Raise'],
+            'exercises': [
+              'Barbell Back Squat',
+              'Romanian Deadlift (Barbell)',
+              'Leg Press',
+              'Standing Calf Raise',
+            ],
           },
           {
             'name': '5-Day PHAT - Push Hypertrophy',
             'description': 'Hypertrophy session for pushing muscles.',
-            'exercises': ['Dumbbell Bench Press', 'Dumbbell Shoulder Press', 'Dumbbell Lateral Raise', 'Cable Tricep Pushdown'],
+            'exercises': [
+              'Dumbbell Bench Press',
+              'Dumbbell Shoulder Press',
+              'Dumbbell Lateral Raise',
+              'Cable Tricep Pushdown',
+            ],
           },
           {
             'name': '5-Day PHAT - Pull Hypertrophy',
             'description': 'Hypertrophy session for pulling muscles.',
-            'exercises': ['Lat Pulldown', 'Dumbbell Row', 'Dumbbell Curl', 'Face Pull', 'Hammer Curl'],
+            'exercises': [
+              'Lat Pulldown',
+              'Dumbbell Row',
+              'Dumbbell Curl',
+              'Face Pull',
+              'Hammer Curl',
+            ],
           },
           {
             'name': '5-Day PHAT - Legs Hypertrophy',
             'description': 'Hypertrophy session for legs.',
-            'exercises': ['Leg Press', 'Lying Leg Curl', 'Leg Extensions', 'Seated Leg Curl', 'Standing Calf Raise'],
+            'exercises': [
+              'Leg Press',
+              'Lying Leg Curl',
+              'Leg Extensions',
+              'Seated Leg Curl',
+              'Standing Calf Raise',
+            ],
           }
         ];
       }
+    }
+  }
+
+  List<Map<String, dynamic>> _getBodyweightStructure(int days) {
+    if (days == 2) {
+      return [
+        {
+          'name': '2-Day Bodyweight Full Body A',
+          'description':
+              'Full body push-focused bodyweight session.',
+          'exercises': [
+            'Push-up',
+            'Bodyweight Squat',
+            'Dips',
+            'Plank',
+            'Lunges',
+            'Ab Crunch',
+          ],
+        },
+        {
+          'name': '2-Day Bodyweight Full Body B',
+          'description':
+              'Full body hinge-focused bodyweight session.',
+          'exercises': [
+            'Glute Bridge',
+            'Bulgarian Split Squat',
+            'Pike Push-up',
+            'Plank',
+            'Step-ups',
+            'Russian Twist',
+          ],
+        }
+      ];
+    } else if (days == 3) {
+      return [
+        {
+          'name': '3-Day Bodyweight Push',
+          'description': 'Bodyweight push day targeting chest, shoulders, triceps.',
+          'exercises': [
+            'Push-up',
+            'Diamond Push-up',
+            'Pike Push-up',
+            'Dips',
+            'Plank',
+          ],
+        },
+        {
+          'name': '3-Day Bodyweight Pull',
+          'description': 'Bodyweight pull day targeting back and biceps.',
+          'exercises': [
+            'Inverted Row',
+            'Superman',
+            'Chin-up',
+            'Reverse Snow Angel',
+            'Plank',
+          ],
+        },
+        {
+          'name': '3-Day Bodyweight Legs',
+          'description': 'Bodyweight lower body day.',
+          'exercises': [
+            'Bodyweight Squat',
+            'Lunges',
+            'Bulgarian Split Squat',
+            'Glute Bridge',
+            'Calf Raise',
+          ],
+        }
+      ];
+    } else if (days == 4) {
+      return [
+        {
+          'name': '4-Day Bodyweight Upper A',
+          'description': 'Bodyweight upper push focus.',
+          'exercises': [
+            'Push-up',
+            'Diamond Push-up',
+            'Dips',
+            'Pike Push-up',
+            'Plank',
+          ],
+        },
+        {
+          'name': '4-Day Bodyweight Lower A',
+          'description': 'Bodyweight squat focus lower body.',
+          'exercises': [
+            'Bodyweight Squat',
+            'Lunges',
+            'Pistol Squat Progression',
+            'Calf Raise',
+            'Plank',
+          ],
+        },
+        {
+          'name': '4-Day Bodyweight Upper B',
+          'description': 'Bodyweight upper pull focus.',
+          'exercises': [
+            'Inverted Row',
+            'Chin-up',
+            'Superman',
+            'Pike Push-up',
+            'Plank',
+          ],
+        },
+        {
+          'name': '4-Day Bodyweight Lower B',
+          'description': 'Bodyweight hinge focus lower body.',
+          'exercises': [
+            'Glute Bridge',
+            'Bulgarian Split Squat',
+            'Single Leg Deadlift (Bodyweight)',
+            'Step-ups',
+            'Plank',
+          ],
+        }
+      ];
+    } else {
+      return [
+        {
+          'name': '5-Day Bodyweight Push',
+          'description': 'Push day — chest, shoulders, triceps.',
+          'exercises': [
+            'Push-up',
+            'Diamond Push-up',
+            'Pike Push-up',
+            'Dips',
+          ],
+        },
+        {
+          'name': '5-Day Bodyweight Pull',
+          'description': 'Pull day — back and biceps.',
+          'exercises': [
+            'Inverted Row',
+            'Chin-up',
+            'Superman',
+            'Reverse Snow Angel',
+          ],
+        },
+        {
+          'name': '5-Day Bodyweight Legs',
+          'description': 'Lower body focus.',
+          'exercises': [
+            'Bodyweight Squat',
+            'Lunges',
+            'Bulgarian Split Squat',
+            'Glute Bridge',
+          ],
+        },
+        {
+          'name': '5-Day Bodyweight Core',
+          'description': 'Core and abdominal focus.',
+          'exercises': [
+            'Plank',
+            'Russian Twist',
+            'Leg Raise',
+            'Ab Crunch',
+          ],
+        },
+        {
+          'name': '5-Day Bodyweight Conditioning',
+          'description': 'Full body conditioning and endurance.',
+          'exercises': [
+            'Burpee',
+            'Mountain Climber',
+            'Jump Squat',
+            'Push-up',
+          ],
+        }
+      ];
     }
   }
 }

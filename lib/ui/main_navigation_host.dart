@@ -72,7 +72,7 @@ class _MainNavigationHostState extends ConsumerState<MainNavigationHost> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: GritTheme.surface,
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: GritTheme.primary.withValues(alpha: 0.3), width: 2),
                     boxShadow: [
@@ -89,12 +89,12 @@ class _MainNavigationHostState extends ConsumerState<MainNavigationHost> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          gradient: GritTheme.primaryGradient,
+                          color: GritTheme.primary,
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
                           Icons.fitness_center_rounded,
-                          color: Colors.white,
+                          color: GritTheme.onPrimary,
                           size: 18,
                         ),
                       ),
@@ -137,15 +137,15 @@ class _MainNavigationHostState extends ConsumerState<MainNavigationHost> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
-                          gradient: GritTheme.primaryGradient,
+                          color: GritTheme.primary,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: const Text(
                           'Open',
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
+                          color: GritTheme.onPrimary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
                           ),
                         ),
                       ),
@@ -163,8 +163,8 @@ class _MainNavigationHostState extends ConsumerState<MainNavigationHost> {
   Widget _buildKawaiiNavBar() {
     return Container(
       decoration: BoxDecoration(
-        color: GritTheme.surface,
-        border: Border(top: BorderSide(color: GritTheme.divider, width: 1.5)),
+        color: Theme.of(context).colorScheme.surface,
+        border: Border(top: BorderSide(color: Theme.of(context).dividerColor, width: 1.5)),
         boxShadow: [
           BoxShadow(
             color: GritTheme.primary.withValues(alpha: 0.06),

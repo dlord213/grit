@@ -1,106 +1,730 @@
 [
-  {"name": "Barbell Bench Press", "targetMuscle": "Chest", "equipment": "Barbell", "description": "Lie on a flat bench, grip the barbell slightly wider than shoulder width, lower it to your chest, and press it back up."},
-  {"name": "Dumbbell Bench Press", "targetMuscle": "Chest", "equipment": "Dumbbell", "description": "Lie on a flat bench with a dumbbell in each hand, lower them to chest level, and press them up."},
-  {"name": "Incline Barbell Bench Press", "targetMuscle": "Chest", "equipment": "Barbell", "description": "Lie on an incline bench, lower the barbell to your upper chest, and press up."},
-  {"name": "Incline Dumbbell Bench Press", "targetMuscle": "Chest", "equipment": "Dumbbell", "description": "Lie on an incline bench, lower the dumbbells to upper chest level, and press up."},
-  {"name": "Decline Barbell Bench Press", "targetMuscle": "Chest", "equipment": "Barbell", "description": "Lie on a decline bench, lower the barbell to lower chest level, and press up."},
-  {"name": "Dumbbell Flyes", "targetMuscle": "Chest", "equipment": "Dumbbell", "description": "Lie on a flat bench, start with weights above chest, lower them out to the sides with a slight elbow bend, and bring them back together."},
-  {"name": "Cable Crossover", "targetMuscle": "Chest", "equipment": "Cables", "description": "Stand between pulley machines, pull cables forward and down in a wide sweeping motion."},
-  {"name": "Push-ups", "targetMuscle": "Chest", "equipment": "Bodyweight", "description": "Standard push-ups on the floor keeping core tight and body straight."},
-  {"name": "Chest Dips", "targetMuscle": "Chest", "equipment": "Bodyweight", "description": "Perform dips on parallel bars, leaning forward slightly to target the chest."},
-  {"name": "Machine Chest Press", "targetMuscle": "Chest", "equipment": "Machine", "description": "Sit in chest press machine, press handles forward until arms are extended."},
-  {"name": "Pec Deck Fly", "targetMuscle": "Chest", "equipment": "Machine", "description": "Sit at pec deck machine, bring pads/handles together in front of chest."},
-  {"name": "Smith Machine Bench Press", "targetMuscle": "Chest", "equipment": "SmithMachine", "description": "Bench press utilizing the guided path of a Smith Machine."},
-  {"name": "Incline Smith Machine Press", "targetMuscle": "Chest", "equipment": "SmithMachine", "description": "Incline bench press utilizing the guided path of a Smith Machine."},
-  {"name": "Deadlift", "targetMuscle": "Back", "equipment": "Barbell", "description": "Lift a loaded barbell off the ground to hip level, keeping back flat and core engaged."},
-  {"name": "Barbell Row", "targetMuscle": "Back", "equipment": "Barbell", "description": "Hinge forward at the hips, pull the barbell to your lower chest/abdomen."},
-  {"name": "Dumbbell Row", "targetMuscle": "Back", "equipment": "Dumbbell", "description": "Support one knee and hand on a bench, pull a dumbbell up to your hip level."},
-  {"name": "Lat Pulldown", "targetMuscle": "Back", "equipment": "Cables", "description": "Sit at a pulldown machine, pull the bar down to your upper chest."},
-  {"name": "Pull-ups", "targetMuscle": "Back", "equipment": "Bodyweight", "description": "Grip a overhead bar with palms facing away, pull chest up to the bar."},
-  {"name": "Chin-ups", "targetMuscle": "Back", "equipment": "Bodyweight", "description": "Grip a overhead bar with palms facing towards you, pull chest to the bar."},
-  {"name": "T-Bar Row", "targetMuscle": "Back", "equipment": "Machine", "description": "Pull the T-Bar handle towards your chest while keeping your back straight."},
-  {"name": "Seated Cable Row", "targetMuscle": "Back", "equipment": "Cables", "description": "Pull the cable attachment towards your lower abdomen while sitting upright."},
-  {"name": "Face Pull", "targetMuscle": "Back", "equipment": "Cables", "description": "Pull cable towards your face/ears, flaring your elbows and squeezing rear delts."},
-  {"name": "Hyperextensions", "targetMuscle": "Back", "equipment": "Bodyweight", "description": "Lie face down on a hyperextension bench, bend at waist, and raise torso up."},
-  {"name": "Straight Arm Pulldown", "targetMuscle": "Back", "equipment": "Cables", "description": "Stand facing cable, pull bar down to thighs keeping arms straight."},
-  {"name": "Single Arm Lat Pulldown", "targetMuscle": "Back", "equipment": "Cables", "description": "Perform lat pulldowns one arm at a time for focused isolation."},
-  {"name": "Barbell Shrugs", "targetMuscle": "Back", "equipment": "Barbell", "description": "Hold barbell in front, shrug shoulders upward toward ears without bending elbows."},
-  {"name": "Dumbbell Shrugs", "targetMuscle": "Back", "equipment": "Dumbbell", "description": "Hold dumbbells at sides, shrug shoulders upward toward ears."},
-  {"name": "Barbell Back Squat", "targetMuscle": "Quads", "equipment": "Barbell", "description": "Place barbell on upper back, squat down until thighs are parallel to ground, and stand up."},
-  {"name": "Barbell Front Squat", "targetMuscle": "Quads", "equipment": "Barbell", "description": "Rest barbell on front shoulders, squat down keeping torso upright, and stand up."},
-  {"name": "Leg Press", "targetMuscle": "Quads", "equipment": "Machine", "description": "Sit in machine, place feet on platform, and press the weight away by extending legs."},
-  {"name": "Hack Squat", "targetMuscle": "Quads", "equipment": "Machine", "description": "Use a hack squat machine to perform guided squats targeting the quadriceps."},
-  {"name": "Bulgarian Split Squat", "targetMuscle": "Quads", "equipment": "Dumbbell", "description": "Place one foot behind you on a bench, hold dumbbells, and squat down on front leg."},
-  {"name": "Leg Extensions", "targetMuscle": "Quads", "equipment": "Machine", "description": "Sit in machine, extend legs forward and upward to contract the quads."},
-  {"name": "Goblet Squat", "targetMuscle": "Quads", "equipment": "Dumbbell", "description": "Hold a single dumbbell vertically at chest level, and squat deep."},
-  {"name": "Dumbbell Lunges", "targetMuscle": "Quads", "equipment": "Dumbbell", "description": "Step forward with one leg, lower hips until back knee is near ground, and push back up."},
-  {"name": "Walking Lunges", "targetMuscle": "Quads", "equipment": "Dumbbell", "description": "Perform lunges continuously stepping forward across a distance."},
-  {"name": "Box Squat", "targetMuscle": "Quads", "equipment": "Barbell", "description": "Squat down onto a box or bench, pause briefly, and explode upward."},
-  {"name": "Romanian Deadlift (Barbell)", "targetMuscle": "Hamstrings", "equipment": "Barbell", "description": "Hold barbell, hinge at hips lowering weight along shins keeping back flat, and squeeze glutes/hams to stand."},
-  {"name": "Romanian Deadlift (Dumbbell)", "targetMuscle": "Hamstrings", "equipment": "Dumbbell", "description": "Hinge at hips holding dumbbells, lowering them along shins, and stand up."},
-  {"name": "Lying Leg Curl", "targetMuscle": "Hamstrings", "equipment": "Machine", "description": "Lie face down on machine, curl pad towards glutes by bending knees."},
-  {"name": "Seated Leg Curl", "targetMuscle": "Hamstrings", "equipment": "Machine", "description": "Sit in leg curl machine, pull pad down and back towards seat."},
-  {"name": "Glute-Ham Raise", "targetMuscle": "Hamstrings", "equipment": "Bodyweight", "description": "Secure ankles in GHR bench, lower torso forward, and raise back up using hamstrings."},
-  {"name": "Nordic Hamstring Curl", "targetMuscle": "Hamstrings", "equipment": "Bodyweight", "description": "Kneeling on floor with ankles anchored, lower body forward under control and push back up."},
-  {"name": "Good Mornings", "targetMuscle": "Hamstrings", "equipment": "Barbell", "description": "Barbell on back, hinge at hips keeping legs relatively straight, and return to upright."},
-  {"name": "Barbell Overhead Press", "targetMuscle": "Shoulders", "equipment": "Barbell", "description": "Press a barbell from upper chest level straight up overhead."},
-  {"name": "Dumbbell Shoulder Press", "targetMuscle": "Shoulders", "equipment": "Dumbbell", "description": "Sit or stand, press dumbbells from shoulder level straight up overhead."},
-  {"name": "Dumbbell Lateral Raise", "targetMuscle": "Shoulders", "equipment": "Dumbbell", "description": "Raise dumbbells out to your sides until arms are parallel to the floor."},
-  {"name": "Cable Lateral Raise", "targetMuscle": "Shoulders", "equipment": "Cables", "description": "Raise cable across body out to the side to target lateral deltoids."},
-  {"name": "Dumbbell Front Raise", "targetMuscle": "Shoulders", "equipment": "Dumbbell", "description": "Raise dumbbells forward to shoulder level in front of you."},
-  {"name": "Dumbbell Rear Delt Fly", "targetMuscle": "Shoulders", "equipment": "Dumbbell", "description": "Bent over at waist, raise dumbbells out to sides, focusing on rear shoulders."},
-  {"name": "Rear Delt Pec Deck Fly", "targetMuscle": "Shoulders", "equipment": "Machine", "description": "Sit facing machine pad, fly handles backwards to target rear delts."},
-  {"name": "Arnold Press", "targetMuscle": "Shoulders", "equipment": "Dumbbell", "description": "Press dumbbells overhead while rotating palms from facing you to facing forward."},
-  {"name": "Upright Row", "targetMuscle": "Shoulders", "equipment": "Barbell", "description": "Pull barbell vertically up to chest level, keeping bar close to body."},
-  {"name": "Push Press", "targetMuscle": "Shoulders", "equipment": "Barbell", "description": "Overhead press using a slight leg dip and drive to assist the lift."},
-  {"name": "Smith Machine Shoulder Press", "targetMuscle": "Shoulders", "equipment": "SmithMachine", "description": "Shoulder press using the guided vertical movement of a Smith Machine."},
-  {"name": "Barbell Curl", "targetMuscle": "Biceps", "equipment": "Barbell", "description": "Stand and curl a barbell up towards shoulders, squeezing biceps."},
-  {"name": "Dumbbell Curl", "targetMuscle": "Biceps", "equipment": "Dumbbell", "description": "Curl dumbbells, rotating palms upward (supinating) at the top."},
-  {"name": "Hammer Curl", "targetMuscle": "Biceps", "equipment": "Dumbbell", "description": "Curl dumbbells keeping palms facing each other (neutral grip)."},
-  {"name": "Barbell Preacher Curl", "targetMuscle": "Biceps", "equipment": "Barbell", "description": "Curl barbell resting upper arms on preacher bench pad."},
-  {"name": "Dumbbell Preacher Curl", "targetMuscle": "Biceps", "equipment": "Dumbbell", "description": "Curl dumbbell resting one arm at a time on preacher bench pad."},
-  {"name": "Concentration Curl", "targetMuscle": "Biceps", "equipment": "Dumbbell", "description": "Sit on bench, rest elbow against inner thigh, curl dumbbell upward."},
-  {"name": "Cable Bicep Curl", "targetMuscle": "Biceps", "equipment": "Cables", "description": "Curl cable attachment towards shoulders while standing."},
-  {"name": "Incline Dumbbell Curl", "targetMuscle": "Biceps", "equipment": "Dumbbell", "description": "Sit on incline bench, curl dumbbells from hanging position."},
-  {"name": "Spider Curl", "targetMuscle": "Biceps", "equipment": "Barbell", "description": "Lie face down on incline bench, curl barbell up from hanging position."},
-  {"name": "Cable Tricep Pushdown", "targetMuscle": "Triceps", "equipment": "Cables", "description": "Push cable bar/rope down by extending elbows fully."},
-  {"name": "Dumbbell Overhead Tricep Extension", "targetMuscle": "Triceps", "equipment": "Dumbbell", "description": "Hold dumbbell overhead with both hands, lower behind head, and extend arms."},
-  {"name": "Skull Crushers", "targetMuscle": "Triceps", "equipment": "Barbell", "description": "Lie on bench, lower barbell/EZ-bar to forehead, and extend elbows."},
-  {"name": "Close Grip Bench Press", "targetMuscle": "Triceps", "equipment": "Barbell", "description": "Bench press with a narrow grip to emphasize the triceps."},
-  {"name": "Triceps Dips", "targetMuscle": "Triceps", "equipment": "Bodyweight", "description": "Perform dips on parallel bars, keeping torso upright to target triceps."},
-  {"name": "Cable Overhead Tricep Extension", "targetMuscle": "Triceps", "equipment": "Cables", "description": "Face away from cable, hold rope overhead, and extend arms forward/up."},
-  {"name": "Diamond Push-ups", "targetMuscle": "Triceps", "equipment": "Bodyweight", "description": "Push-ups with hands close together forming a diamond shape under chest."},
-  {"name": "Dumbbell Kickback", "targetMuscle": "Triceps", "equipment": "Dumbbell", "description": "Hinge forward, raise upper arm parallel to torso, extend elbow back."},
-  {"name": "Bench Dips", "targetMuscle": "Triceps", "equipment": "Bodyweight", "description": "Place hands on bench behind you, feet on floor/another bench, lower and lift hips."},
-  {"name": "Ab Crunch", "targetMuscle": "Abs", "equipment": "Bodyweight", "description": "Lie on back, curl head/shoulders up off floor, contracting abs."},
-  {"name": "Hanging Leg Raise", "targetMuscle": "Abs", "equipment": "Bodyweight", "description": "Hang from bar, raise legs to parallel or higher keeping them straight."},
-  {"name": "Plank", "targetMuscle": "Abs", "equipment": "Bodyweight", "description": "Hold forearm plank position keeping body completely straight and core tight."},
-  {"name": "Decline Crunch", "targetMuscle": "Abs", "equipment": "Bodyweight", "description": "Crunch on a decline bench to increase resistance."},
-  {"name": "Russian Twist", "targetMuscle": "Abs", "equipment": "Bodyweight", "description": "Sit with knees bent, lean back slightly, rotate torso side to side."},
-  {"name": "Cable Crunch", "targetMuscle": "Abs", "equipment": "Cables", "description": "Kneel facing cable machine, hold rope behind neck, crunch torso down."},
-  {"name": "Ab Wheel Rollout", "targetMuscle": "Abs", "equipment": "Bodyweight", "description": "Kneel, roll ab wheel forward as far as possible keeping back flat, and pull back."},
-  {"name": "Lying Leg Raise", "targetMuscle": "Abs", "equipment": "Bodyweight", "description": "Lie on back, raise legs to vertical, lower them slowly without touching floor."},
-  {"name": "Side Plank", "targetMuscle": "Abs", "equipment": "Bodyweight", "description": "Hold side plank on one elbow, maintaining straight body line."},
-  {"name": "Mountain Climbers", "targetMuscle": "Abs", "equipment": "Bodyweight", "description": "In pushup position, drive knees to chest alternately in rapid motion."},
-  {"name": "Standing Calf Raise", "targetMuscle": "Calves", "equipment": "Machine", "description": "Place shoulders under pads, raise heels off platform by extending ankles."},
-  {"name": "Seated Calf Raise", "targetMuscle": "Calves", "equipment": "Machine", "description": "Sit, place pad on knees, raise heels by extending ankles."},
-  {"name": "Calf Press on Leg Press", "targetMuscle": "Calves", "equipment": "Machine", "description": "Place toes on bottom of leg press plate, push platform by flexing ankles."},
-  {"name": "Donkey Calf Raise", "targetMuscle": "Calves", "equipment": "Machine", "description": "Bend forward at hips, place weight/partner on lower back, raise heels."},
-  {"name": "Clean and Jerk", "targetMuscle": "FullBody", "equipment": "Barbell", "description": "Lift barbell from floor to shoulders (clean), then drive it overhead (jerk)."},
-  {"name": "Snatch", "targetMuscle": "Barbell", "equipment": "Barbell", "description": "Lift barbell from floor to overhead in one single explosive movement."},
-  {"name": "Kettlebell Swing", "targetMuscle": "FullBody", "equipment": "Dumbbell", "description": "Swing a kettlebell (or dumbbell) between legs and up to eye level using hips."},
-  {"name": "Thruster", "targetMuscle": "FullBody", "equipment": "Barbell", "description": "Perform a front squat, then press the barbell overhead in one fluid motion."},
-  {"name": "Burpee", "targetMuscle": "FullBody", "equipment": "Bodyweight", "description": "Drop to push-up, jump back to feet, and jump straight up in the air."},
-  {"name": "Farmer's Walk", "targetMuscle": "FullBody", "equipment": "Dumbbell", "description": "Hold heavy dumbbells or plates in hands, walk a set distance."},
-  {"name": "Wall Ball", "targetMuscle": "FullBody", "equipment": "Bodyweight", "description": "Squat and throw medicine ball up against target wall, catching it on return."},
-  {"name": "Cable Bicep Curl (Behind Back)", "targetMuscle": "Biceps", "equipment": "Cables", "description": "Stand facing away from low pulley, curl handle forward keeping elbow back."},
-  {"name": "Jefferson Squat", "targetMuscle": "Quads", "equipment": "Barbell", "description": "Stand straddling a barbell, squat down, grip the bar, and lift by standing."},
-  {"name": "Zottman Curl", "targetMuscle": "Biceps", "equipment": "Dumbbell", "description": "Dumbbell curl up with palms up, rotate palms down at top, lower down palms down."},
-  {"name": "Cable Kickbacks (Glute)", "targetMuscle": "Hamstrings", "equipment": "Cables", "description": "Attach ankle cuff, kick leg backward squeezing glutes/hamstrings."},
-  {"name": "Svend Press", "targetMuscle": "Chest", "equipment": "Dumbbell", "description": "Pinch two plates or a dumbbell between palms, press them forward away from chest."},
-  {"name": "Deficit Deadlift", "targetMuscle": "Back", "equipment": "Barbell", "description": "Deadlift standing on a raised platform (1-3 inches) to increase range of motion."},
-  {"name": "Step-ups", "targetMuscle": "Quads", "equipment": "Dumbbell", "description": "Hold dumbbells, step up onto a box or bench, and step down."},
-  {"name": "Plank Shoulder Taps", "targetMuscle": "Abs", "equipment": "Bodyweight", "description": "Hold plank, tap opposite shoulder with hand alternating sides."},
-  {"name": "Woodchopper (Cable)", "targetMuscle": "Abs", "equipment": "Cables", "description": "Pull cable diagonally across body from high to low, rotating torso."},
-  {"name": "Hip Thrust (Barbell)", "targetMuscle": "Hamstrings", "equipment": "Barbell", "description": "Sit on floor, back against bench, place barbell on hips, raise hips to parallel."}
+  {
+    "name": "Barbell Bench Press",
+    "targetMuscle": "Chest",
+    "equipment": "Barbell",
+    "description": "Lie on a flat bench, grip the barbell slightly wider than shoulder width, lower it to your chest, and press it back up.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg"
+  },
+  {
+    "name": "Dumbbell Bench Press",
+    "targetMuscle": "Chest",
+    "equipment": "Dumbbell",
+    "description": "Lie on a flat bench with a dumbbell in each hand, lower them to chest level, and press them up.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bench_Press/0.jpg"
+  },
+  {
+    "name": "Incline Barbell Bench Press",
+    "targetMuscle": "Chest",
+    "equipment": "Barbell",
+    "description": "Lie on an incline bench, lower the barbell to your upper chest, and press up.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell Incline Bench Press - Medium Grip/0.jpg"
+  },
+  {
+    "name": "Incline Dumbbell Bench Press",
+    "targetMuscle": "Chest",
+    "equipment": "Dumbbell",
+    "description": "Lie on an incline bench, lower the dumbbells to upper chest level, and press up.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bench_Press/0.jpg"
+  },
+  {
+    "name": "Decline Barbell Bench Press",
+    "targetMuscle": "Chest",
+    "equipment": "Barbell",
+    "description": "Lie on a decline bench, lower the barbell to lower chest level, and press up.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Barbell_Bench_Press/0.jpg"
+  },
+  {
+    "name": "Dumbbell Flyes",
+    "targetMuscle": "Chest",
+    "equipment": "Dumbbell",
+    "description": "Lie on a flat bench, start with weights above chest, lower them out to the sides with a slight elbow bend, and bring them back together.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Flyes/0.jpg"
+  },
+  {
+    "name": "Cable Crossover",
+    "targetMuscle": "Chest",
+    "equipment": "Cables",
+    "description": "Stand between pulley machines, pull cables forward and down in a wide sweeping motion.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crossover/0.jpg"
+  },
+  {
+    "name": "Push-ups",
+    "targetMuscle": "Chest",
+    "equipment": "Bodyweight",
+    "description": "Standard push-ups on the floor keeping core tight and body straight.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Push-Ups_-_Close_Triceps_Position/0.jpg"
+  },
+  {
+    "name": "Chest Dips",
+    "targetMuscle": "Chest",
+    "equipment": "Bodyweight",
+    "description": "Perform dips on parallel bars, leaning forward slightly to target the chest.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dips (Chest Version)/0.jpg"
+  },
+  {
+    "name": "Machine Chest Press",
+    "targetMuscle": "Chest",
+    "equipment": "Machine",
+    "description": "Sit in chest press machine, press handles forward until arms are extended.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Machine Bench Press/0.jpg"
+  },
+  {
+    "name": "Pec Deck Fly",
+    "targetMuscle": "Chest",
+    "equipment": "Machine",
+    "description": "Sit at pec deck machine, bring pads/handles together in front of chest.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Machine Fly (Pec Deck)/0.jpg"
+  },
+  {
+    "name": "Smith Machine Bench Press",
+    "targetMuscle": "Chest",
+    "equipment": "SmithMachine",
+    "description": "Bench press utilizing the guided path of a Smith Machine.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Bench_Press/0.jpg"
+  },
+  {
+    "name": "Incline Smith Machine Press",
+    "targetMuscle": "Chest",
+    "equipment": "SmithMachine",
+    "description": "Incline bench press utilizing the guided path of a Smith Machine.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline Bench Press/0.jpg"
+  },
+  {
+    "name": "Deadlift",
+    "targetMuscle": "Back",
+    "equipment": "Barbell",
+    "description": "Lift a loaded barbell off the ground to hip level, keeping back flat and core engaged.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Deadlift_with_Bands/0.jpg"
+  },
+  {
+    "name": "Barbell Row",
+    "targetMuscle": "Back",
+    "equipment": "Barbell",
+    "description": "Hinge forward at the hips, pull the barbell to your lower chest/abdomen.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/0.jpg"
+  },
+  {
+    "name": "Dumbbell Row",
+    "targetMuscle": "Back",
+    "equipment": "Dumbbell",
+    "description": "Support one knee and hand on a bench, pull a dumbbell up to your hip level.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Two-Dumbbell_Row/0.jpg"
+  },
+  {
+    "name": "Lat Pulldown",
+    "targetMuscle": "Back",
+    "equipment": "Cables",
+    "description": "Sit at a pulldown machine, pull the bar down to your upper chest.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One_Arm_Lat_Pulldown/0.jpg"
+  },
+  {
+    "name": "Pull-ups",
+    "targetMuscle": "Back",
+    "equipment": "Bodyweight",
+    "description": "Grip a overhead bar with palms facing away, pull chest up to the bar.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pull-Up/0.jpg"
+  },
+  {
+    "name": "Chin-ups",
+    "targetMuscle": "Back",
+    "equipment": "Bodyweight",
+    "description": "Grip a overhead bar with palms facing towards you, pull chest to the bar.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chin-Up/0.jpg"
+  },
+  {
+    "name": "T-Bar Row",
+    "targetMuscle": "Back",
+    "equipment": "Machine",
+    "description": "Pull the T-Bar handle towards your chest while keeping your back straight.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/T-Bar_Row_with_Handle/0.jpg"
+  },
+  {
+    "name": "Seated Cable Row",
+    "targetMuscle": "Back",
+    "equipment": "Cables",
+    "description": "Pull the cable attachment towards your lower abdomen while sitting upright.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Cable_Rows/0.jpg"
+  },
+  {
+    "name": "Face Pull",
+    "targetMuscle": "Back",
+    "equipment": "Cables",
+    "description": "Pull cable towards your face/ears, flaring your elbows and squeezing rear delts.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Face_Pull/0.jpg"
+  },
+  {
+    "name": "Hyperextensions",
+    "targetMuscle": "Back",
+    "equipment": "Bodyweight",
+    "description": "Lie face down on a hyperextension bench, bend at waist, and raise torso up.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hyperextensions_Back_Extensions/0.jpg"
+  },
+  {
+    "name": "Straight Arm Pulldown",
+    "targetMuscle": "Back",
+    "equipment": "Cables",
+    "description": "Stand facing cable, pull bar down to thighs keeping arms straight.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Straight-Arm Pulldown/0.jpg"
+  },
+  {
+    "name": "Single Arm Lat Pulldown",
+    "targetMuscle": "Back",
+    "equipment": "Cables",
+    "description": "Perform lat pulldowns one arm at a time for focused isolation.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm Dumbbell Row/0.jpg"
+  },
+  {
+    "name": "Barbell Shrugs",
+    "targetMuscle": "Back",
+    "equipment": "Barbell",
+    "description": "Hold barbell in front, shrug shoulders upward toward ears without bending elbows.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shrug/0.jpg"
+  },
+  {
+    "name": "Dumbbell Shrugs",
+    "targetMuscle": "Back",
+    "equipment": "Dumbbell",
+    "description": "Hold dumbbells at sides, shrug shoulders upward toward ears.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Shrug/0.jpg"
+  },
+  {
+    "name": "Barbell Back Squat",
+    "targetMuscle": "Quads",
+    "equipment": "Barbell",
+    "description": "Place barbell on upper back, squat down until thighs are parallel to ground, and stand up.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell Squat/0.jpg"
+  },
+  {
+    "name": "Barbell Front Squat",
+    "targetMuscle": "Quads",
+    "equipment": "Barbell",
+    "description": "Rest barbell on front shoulders, squat down keeping torso upright, and stand up.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front Squat (Clean Grip)/0.jpg"
+  },
+  {
+    "name": "Leg Press",
+    "targetMuscle": "Quads",
+    "equipment": "Machine",
+    "description": "Sit in machine, place feet on platform, and press the weight away by extending legs.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg"
+  },
+  {
+    "name": "Hack Squat",
+    "targetMuscle": "Quads",
+    "equipment": "Machine",
+    "description": "Use a hack squat machine to perform guided squats targeting the quadriceps.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hack_Squat/0.jpg"
+  },
+  {
+    "name": "Bulgarian Split Squat",
+    "targetMuscle": "Quads",
+    "equipment": "Dumbbell",
+    "description": "Place one foot behind you on a bench, hold dumbbells, and squat down on front leg.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell Split Squat/0.jpg"
+  },
+  {
+    "name": "Leg Extensions",
+    "targetMuscle": "Quads",
+    "equipment": "Machine",
+    "description": "Sit in machine, extend legs forward and upward to contract the quads.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Extensions/0.jpg"
+  },
+  {
+    "name": "Goblet Squat",
+    "targetMuscle": "Quads",
+    "equipment": "Dumbbell",
+    "description": "Hold a single dumbbell vertically at chest level, and squat deep.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Goblet_Squat/0.jpg"
+  },
+  {
+    "name": "Dumbbell Lunges",
+    "targetMuscle": "Quads",
+    "equipment": "Dumbbell",
+    "description": "Step forward with one leg, lower hips until back knee is near ground, and push back up.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lunges/0.jpg"
+  },
+  {
+    "name": "Walking Lunges",
+    "targetMuscle": "Quads",
+    "equipment": "Dumbbell",
+    "description": "Perform lunges continuously stepping forward across a distance.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell Walking Lunge/0.jpg"
+  },
+  {
+    "name": "Box Squat",
+    "targetMuscle": "Quads",
+    "equipment": "Barbell",
+    "description": "Squat down onto a box or bench, pause briefly, and explode upward.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Box_Squat/0.jpg"
+  },
+  {
+    "name": "Romanian Deadlift (Barbell)",
+    "targetMuscle": "Hamstrings",
+    "equipment": "Barbell",
+    "description": "Hold barbell, hinge at hips lowering weight along shins keeping back flat, and squeeze glutes/hams to stand.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift/0.jpg"
+  },
+  {
+    "name": "Romanian Deadlift (Dumbbell)",
+    "targetMuscle": "Hamstrings",
+    "equipment": "Dumbbell",
+    "description": "Hinge at hips holding dumbbells, lowering them along shins, and stand up.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift/0.jpg"
+  },
+  {
+    "name": "Lying Leg Curl",
+    "targetMuscle": "Hamstrings",
+    "equipment": "Machine",
+    "description": "Lie face down on machine, curl pad towards glutes by bending knees.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Leg_Curls/0.jpg"
+  },
+  {
+    "name": "Seated Leg Curl",
+    "targetMuscle": "Hamstrings",
+    "equipment": "Machine",
+    "description": "Sit in leg curl machine, pull pad down and back towards seat.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Leg_Curl/0.jpg"
+  },
+  {
+    "name": "Glute-Ham Raise",
+    "targetMuscle": "Hamstrings",
+    "equipment": "Bodyweight",
+    "description": "Secure ankles in GHR bench, lower torso forward, and raise back up using hamstrings.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Floor_Glute-Ham_Raise/0.jpg"
+  },
+  {
+    "name": "Nordic Hamstring Curl",
+    "targetMuscle": "Hamstrings",
+    "equipment": "Bodyweight",
+    "description": "Kneeling on floor with ankles anchored, lower body forward under control and push back up.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying Hamstring Curl/0.jpg"
+  },
+  {
+    "name": "Good Mornings",
+    "targetMuscle": "Hamstrings",
+    "equipment": "Barbell",
+    "description": "Barbell on back, hinge at hips keeping legs relatively straight, and return to upright.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Good_Morning/0.jpg"
+  },
+  {
+    "name": "Barbell Overhead Press",
+    "targetMuscle": "Shoulders",
+    "equipment": "Barbell",
+    "description": "Press a barbell from upper chest level straight up overhead.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing Military Press/0.jpg"
+  },
+  {
+    "name": "Dumbbell Shoulder Press",
+    "targetMuscle": "Shoulders",
+    "equipment": "Dumbbell",
+    "description": "Sit or stand, press dumbbells from shoulder level straight up overhead.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Shoulder_Press/0.jpg"
+  },
+  {
+    "name": "Dumbbell Lateral Raise",
+    "targetMuscle": "Shoulders",
+    "equipment": "Dumbbell",
+    "description": "Raise dumbbells out to your sides until arms are parallel to the floor.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable Seated Lateral Raise/0.jpg"
+  },
+  {
+    "name": "Cable Lateral Raise",
+    "targetMuscle": "Shoulders",
+    "equipment": "Cables",
+    "description": "Raise cable across body out to the side to target lateral deltoids.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable Seated Lateral Raise/0.jpg"
+  },
+  {
+    "name": "Dumbbell Front Raise",
+    "targetMuscle": "Shoulders",
+    "equipment": "Dumbbell",
+    "description": "Raise dumbbells forward to shoulder level in front of you.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side Laterals to Front Raise/0.jpg"
+  },
+  {
+    "name": "Dumbbell Rear Delt Fly",
+    "targetMuscle": "Shoulders",
+    "equipment": "Dumbbell",
+    "description": "Bent over at waist, raise dumbbells out to sides, focusing on rear shoulders.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated Bent-Over Rear Delt Raise/0.jpg"
+  },
+  {
+    "name": "Rear Delt Pec Deck Fly",
+    "targetMuscle": "Shoulders",
+    "equipment": "Machine",
+    "description": "Sit facing machine pad, fly handles backwards to target rear delts.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse Flyes/0.jpg"
+  },
+  {
+    "name": "Arnold Press",
+    "targetMuscle": "Shoulders",
+    "equipment": "Dumbbell",
+    "description": "Press dumbbells overhead while rotating palms from facing you to facing forward.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Arnold_Press/0.jpg"
+  },
+  {
+    "name": "Upright Row",
+    "targetMuscle": "Shoulders",
+    "equipment": "Barbell",
+    "description": "Pull barbell vertically up to chest level, keeping bar close to body.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Upright_Row_-_With_Bands/0.jpg"
+  },
+  {
+    "name": "Push Press",
+    "targetMuscle": "Shoulders",
+    "equipment": "Barbell",
+    "description": "Overhead press using a slight leg dip and drive to assist the lift.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Push_Press/0.jpg"
+  },
+  {
+    "name": "Smith Machine Shoulder Press",
+    "targetMuscle": "Shoulders",
+    "equipment": "SmithMachine",
+    "description": "Shoulder press using the guided vertical movement of a Smith Machine.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Machine Shoulder (Military) Press/0.jpg"
+  },
+  {
+    "name": "Barbell Curl",
+    "targetMuscle": "Biceps",
+    "equipment": "Barbell",
+    "description": "Stand and curl a barbell up towards shoulders, squeezing biceps.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Curl/0.jpg"
+  },
+  {
+    "name": "Dumbbell Curl",
+    "targetMuscle": "Biceps",
+    "equipment": "Dumbbell",
+    "description": "Curl dumbbells, rotating palms upward (supinating) at the top.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Dumbbell_Curl/0.jpg"
+  },
+  {
+    "name": "Hammer Curl",
+    "targetMuscle": "Biceps",
+    "equipment": "Dumbbell",
+    "description": "Curl dumbbells keeping palms facing each other (neutral grip).",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hammer_Curls/0.jpg"
+  },
+  {
+    "name": "Barbell Preacher Curl",
+    "targetMuscle": "Biceps",
+    "equipment": "Barbell",
+    "description": "Curl barbell resting upper arms on preacher bench pad.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Preacher_Curl/0.jpg"
+  },
+  {
+    "name": "Dumbbell Preacher Curl",
+    "targetMuscle": "Biceps",
+    "equipment": "Dumbbell",
+    "description": "Curl dumbbell resting one arm at a time on preacher bench pad.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One_Arm_Dumbbell_Preacher_Curl/0.jpg"
+  },
+  {
+    "name": "Concentration Curl",
+    "targetMuscle": "Biceps",
+    "equipment": "Dumbbell",
+    "description": "Sit on bench, rest elbow against inner thigh, curl dumbbell upward.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Concentration_Curls/0.jpg"
+  },
+  {
+    "name": "Cable Bicep Curl",
+    "targetMuscle": "Biceps",
+    "equipment": "Cables",
+    "description": "Curl cable attachment towards shoulders while standing.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing Biceps Cable Curl/0.jpg"
+  },
+  {
+    "name": "Incline Dumbbell Curl",
+    "targetMuscle": "Biceps",
+    "equipment": "Dumbbell",
+    "description": "Sit on incline bench, curl dumbbells from hanging position.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Dumbbell_Curl/0.jpg"
+  },
+  {
+    "name": "Spider Curl",
+    "targetMuscle": "Biceps",
+    "equipment": "Barbell",
+    "description": "Lie face down on incline bench, curl barbell up from hanging position.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Spider_Curl/0.jpg"
+  },
+  {
+    "name": "Cable Tricep Pushdown",
+    "targetMuscle": "Triceps",
+    "equipment": "Cables",
+    "description": "Push cable bar/rope down by extending elbows fully.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps Pushdown/0.jpg"
+  },
+  {
+    "name": "Dumbbell Overhead Tricep Extension",
+    "targetMuscle": "Triceps",
+    "equipment": "Dumbbell",
+    "description": "Hold dumbbell overhead with both hands, lower behind head, and extend arms.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell Triceps Extension/0.jpg"
+  },
+  {
+    "name": "Skull Crushers",
+    "targetMuscle": "Triceps",
+    "equipment": "Barbell",
+    "description": "Lie on bench, lower barbell/EZ-bar to forehead, and extend elbows.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying Triceps Press/0.jpg"
+  },
+  {
+    "name": "Close Grip Bench Press",
+    "targetMuscle": "Triceps",
+    "equipment": "Barbell",
+    "description": "Bench press with a narrow grip to emphasize the triceps.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip Bench Press/0.jpg"
+  },
+  {
+    "name": "Triceps Dips",
+    "targetMuscle": "Triceps",
+    "equipment": "Bodyweight",
+    "description": "Perform dips on parallel bars, keeping torso upright to target triceps.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps Pushdown/0.jpg"
+  },
+  {
+    "name": "Cable Overhead Tricep Extension",
+    "targetMuscle": "Triceps",
+    "equipment": "Cables",
+    "description": "Face away from cable, hold rope overhead, and extend arms forward/up.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps Pushdown - Rope Attachment/0.jpg"
+  },
+  {
+    "name": "Diamond Push-ups",
+    "targetMuscle": "Triceps",
+    "equipment": "Bodyweight",
+    "description": "Push-ups with hands close together forming a diamond shape under chest.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip Push-Up/0.jpg"
+  },
+  {
+    "name": "Dumbbell Kickback",
+    "targetMuscle": "Triceps",
+    "equipment": "Dumbbell",
+    "description": "Hinge forward, raise upper arm parallel to torso, extend elbow back.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Tricep_Dumbbell_Kickback/0.jpg"
+  },
+  {
+    "name": "Bench Dips",
+    "targetMuscle": "Triceps",
+    "equipment": "Bodyweight",
+    "description": "Place hands on bench behind you, feet on floor/another bench, lower and lift hips.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg"
+  },
+  {
+    "name": "Ab Crunch",
+    "targetMuscle": "Abs",
+    "equipment": "Bodyweight",
+    "description": "Lie on back, curl head/shoulders up off floor, contracting abs.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Crunch_Machine/0.jpg"
+  },
+  {
+    "name": "Hanging Leg Raise",
+    "targetMuscle": "Abs",
+    "equipment": "Bodyweight",
+    "description": "Hang from bar, raise legs to parallel or higher keeping them straight.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg"
+  },
+  {
+    "name": "Plank",
+    "targetMuscle": "Abs",
+    "equipment": "Bodyweight",
+    "description": "Hold forearm plank position keeping body completely straight and core tight.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg"
+  },
+  {
+    "name": "Decline Crunch",
+    "targetMuscle": "Abs",
+    "equipment": "Bodyweight",
+    "description": "Crunch on a decline bench to increase resistance.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Crunch/0.jpg"
+  },
+  {
+    "name": "Russian Twist",
+    "targetMuscle": "Abs",
+    "equipment": "Bodyweight",
+    "description": "Sit with knees bent, lean back slightly, rotate torso side to side.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Russian_Twist/0.jpg"
+  },
+  {
+    "name": "Cable Crunch",
+    "targetMuscle": "Abs",
+    "equipment": "Cables",
+    "description": "Kneel facing cable machine, hold rope behind neck, crunch torso down.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crunch/0.jpg"
+  },
+  {
+    "name": "Ab Wheel Rollout",
+    "targetMuscle": "Abs",
+    "equipment": "Bodyweight",
+    "description": "Kneel, roll ab wheel forward as far as possible keeping back flat, and pull back.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell Ab Rollout/0.jpg"
+  },
+  {
+    "name": "Lying Leg Raise",
+    "targetMuscle": "Abs",
+    "equipment": "Bodyweight",
+    "description": "Lie on back, raise legs to vertical, lower them slowly without touching floor.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Flat_Bench_Lying_Leg_Raise/0.jpg"
+  },
+  {
+    "name": "Side Plank",
+    "targetMuscle": "Abs",
+    "equipment": "Bodyweight",
+    "description": "Hold side plank on one elbow, maintaining straight body line.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg"
+  },
+  {
+    "name": "Mountain Climbers",
+    "targetMuscle": "Abs",
+    "equipment": "Bodyweight",
+    "description": "In pushup position, drive knees to chest alternately in rapid motion.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Mountain_Climbers/0.jpg"
+  },
+  {
+    "name": "Standing Calf Raise",
+    "targetMuscle": "Calves",
+    "equipment": "Machine",
+    "description": "Place shoulders under pads, raise heels off platform by extending ankles.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Calf_Raises/0.jpg"
+  },
+  {
+    "name": "Seated Calf Raise",
+    "targetMuscle": "Calves",
+    "equipment": "Machine",
+    "description": "Sit, place pad on knees, raise heels by extending ankles.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Calf_Raise/0.jpg"
+  },
+  {
+    "name": "Calf Press on Leg Press",
+    "targetMuscle": "Calves",
+    "equipment": "Machine",
+    "description": "Place toes on bottom of leg press plate, push platform by flexing ankles.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf_Press/0.jpg"
+  },
+  {
+    "name": "Donkey Calf Raise",
+    "targetMuscle": "Calves",
+    "equipment": "Machine",
+    "description": "Bend forward at hips, place weight/partner on lower back, raise heels.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Donkey_Calf_Raises/0.jpg"
+  },
+  {
+    "name": "Clean and Jerk",
+    "targetMuscle": "FullBody",
+    "equipment": "Barbell",
+    "description": "Lift barbell from floor to shoulders (clean), then drive it overhead (jerk).",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clean_and_Jerk/0.jpg"
+  },
+  {
+    "name": "Snatch",
+    "targetMuscle": "Barbell",
+    "equipment": "Barbell",
+    "description": "Lift barbell from floor to overhead in one single explosive movement.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Snatch/0.jpg"
+  },
+  {
+    "name": "Kettlebell Swing",
+    "targetMuscle": "FullBody",
+    "equipment": "Dumbbell",
+    "description": "Swing a kettlebell (or dumbbell) between legs and up to eye level using hips.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Kettlebell_Swings/0.jpg"
+  },
+  {
+    "name": "Thruster",
+    "targetMuscle": "FullBody",
+    "equipment": "Barbell",
+    "description": "Perform a front squat, then press the barbell overhead in one fluid motion.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Thruster/0.jpg"
+  },
+  {
+    "name": "Burpee",
+    "targetMuscle": "FullBody",
+    "equipment": "Bodyweight",
+    "description": "Drop to push-up, jump back to feet, and jump straight up in the air.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Medicine Ball Clean/0.jpg"
+  },
+  {
+    "name": "Farmer's Walk",
+    "targetMuscle": "FullBody",
+    "equipment": "Dumbbell",
+    "description": "Hold heavy dumbbells or plates in hands, walk a set distance.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Farmers_Walk/0.jpg"
+  },
+  {
+    "name": "Wall Ball",
+    "targetMuscle": "FullBody",
+    "equipment": "Bodyweight",
+    "description": "Squat and throw medicine ball up against target wall, catching it on return.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Medicine Ball Clean/0.jpg"
+  },
+  {
+    "name": "Cable Bicep Curl (Behind Back)",
+    "targetMuscle": "Biceps",
+    "equipment": "Cables",
+    "description": "Stand facing away from low pulley, curl handle forward keeping elbow back.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing Biceps Cable Curl/0.jpg"
+  },
+  {
+    "name": "Jefferson Squat",
+    "targetMuscle": "Quads",
+    "equipment": "Barbell",
+    "description": "Stand straddling a barbell, squat down, grip the bar, and lift by standing.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Jefferson_Squats/0.jpg"
+  },
+  {
+    "name": "Zottman Curl",
+    "targetMuscle": "Biceps",
+    "equipment": "Dumbbell",
+    "description": "Dumbbell curl up with palms up, rotate palms down at top, lower down palms down.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Zottman_Curl/0.jpg"
+  },
+  {
+    "name": "Cable Kickbacks (Glute)",
+    "targetMuscle": "Hamstrings",
+    "equipment": "Cables",
+    "description": "Attach ankle cuff, kick leg backward squeezing glutes/hamstrings.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Legged Cable Kickback/0.jpg"
+  },
+  {
+    "name": "Svend Press",
+    "targetMuscle": "Chest",
+    "equipment": "Dumbbell",
+    "description": "Pinch two plates or a dumbbell between palms, press them forward away from chest.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Svend_Press/0.jpg"
+  },
+  {
+    "name": "Deficit Deadlift",
+    "targetMuscle": "Back",
+    "equipment": "Barbell",
+    "description": "Deadlift standing on a raised platform (1-3 inches) to increase range of motion.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Deficit_Deadlift/0.jpg"
+  },
+  {
+    "name": "Step-ups",
+    "targetMuscle": "Quads",
+    "equipment": "Dumbbell",
+    "description": "Hold dumbbells, step up onto a box or bench, and step down.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Step-Up/0.jpg"
+  },
+  {
+    "name": "Plank Shoulder Taps",
+    "targetMuscle": "Abs",
+    "equipment": "Bodyweight",
+    "description": "Hold plank, tap opposite shoulder with hand alternating sides.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg"
+  },
+  {
+    "name": "Woodchopper (Cable)",
+    "targetMuscle": "Abs",
+    "equipment": "Cables",
+    "description": "Pull cable diagonally across body from high to low, rotating torso.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable Crunch/0.jpg"
+  },
+  {
+    "name": "Hip Thrust (Barbell)",
+    "targetMuscle": "Hamstrings",
+    "equipment": "Barbell",
+    "description": "Sit on floor, back against bench, place barbell on hips, raise hips to parallel.",
+    "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell Hip Thrust/0.jpg"
+  }
 ]

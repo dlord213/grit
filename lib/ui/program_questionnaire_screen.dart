@@ -4,21 +4,93 @@ import '../providers/database_provider.dart';
 import '../services/program_generator.dart';
 import 'theme.dart';
 
+class _AnimatedOptionCard extends StatefulWidget {
+  final bool isSelected;
+  final VoidCallback onTap;
+  final Widget child;
+
+  const _AnimatedOptionCard({
+    required this.isSelected,
+    required this.onTap,
+    required this.child,
+  });
+
+  @override
+  State<_AnimatedOptionCard> createState() => _AnimatedOptionCardState();
+}
+
+class _AnimatedOptionCardState extends State<_AnimatedOptionCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _onTapDown(TapDownDetails _) {
+    _controller.stop();
+    _controller.animateTo(0.95,
+        duration: const Duration(milliseconds: 100), curve: Curves.easeInOut);
+  }
+
+  void _onTapUp(TapUpDetails _) {
+    _controller.stop();
+    _controller.animateTo(1.0,
+        duration: const Duration(milliseconds: 300), curve: Curves.elasticOut);
+  }
+
+  void _onTapCancel() {
+    _controller.stop();
+    _controller.animateTo(1.0,
+        duration: const Duration(milliseconds: 300), curve: Curves.elasticOut);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
+      onTap: widget.onTap,
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: widget.child,
+      ),
+    );
+  }
+}
+
 class ProgramQuestionnaireScreen extends ConsumerStatefulWidget {
   const ProgramQuestionnaireScreen({super.key});
 
   @override
-  ConsumerState<ProgramQuestionnaireScreen> createState() => _ProgramQuestionnaireScreenState();
+  ConsumerState<ProgramQuestionnaireScreen> createState() =>
+      _ProgramQuestionnaireScreenState();
 }
 
-class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnaireScreen> {
+class _ProgramQuestionnaireScreenState
+    extends ConsumerState<ProgramQuestionnaireScreen> {
   final PageController _pageController = PageController();
   int _currentStep = 0;
 
-  // Answers
   int _daysPerWeek = 3;
   String _goal = 'Hypertrophy';
-  String _equipment = 'Full Gym';
+  final Set<String> _selectedEquipment = {};
   bool _isGenerating = false;
 
   void _nextPage() {
@@ -52,7 +124,7 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
       final count = await generator.generateProgram(
         daysPerWeek: _daysPerWeek,
         goal: _goal,
-        equipment: _equipment,
+        equipment: _selectedEquipment,
       );
 
       if (mounted) {
@@ -69,7 +141,7 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error generating program: $e'),
-            backgroundColor: Colors.redAccent,
+            backgroundColor: GritTheme.danger,
           ),
         );
       }
@@ -85,7 +157,7 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: GritTheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Row(
           mainAxisSize: MainAxisSize.min,
@@ -98,8 +170,11 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () {
-            if (_currentStep > 0) _prevPage();
-            else Navigator.pop(context);
+            if (_currentStep > 0) {
+              _prevPage();
+            } else {
+              Navigator.pop(context);
+            }
           },
         ),
       ),
@@ -113,7 +188,8 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
                     SizedBox(height: 20),
                     Text(
                       'Assembling templates in database...',
-                      style: TextStyle(color: GritTheme.textSecondary, fontSize: 16),
+                      style: TextStyle(
+                          color: GritTheme.textSecondary, fontSize: 16),
                     ),
                   ],
                 ),
@@ -121,10 +197,7 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Step Indicator
                   _buildStepIndicator(),
-                  
-                  // Form Pages
                   Expanded(
                     child: PageView(
                       controller: _pageController,
@@ -141,8 +214,6 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
                       ],
                     ),
                   ),
-
-                  // Bottom buttons
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Row(
@@ -156,11 +227,16 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
                         else
                           const SizedBox(),
                         ElevatedButton(
-                          onPressed: _nextPage,
+                          onPressed: (_currentStep == 2 &&
+                                  _selectedEquipment.isEmpty)
+                              ? null
+                              : _nextPage,
                           style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 40, vertical: 16),
                           ),
-                          child: Text(_currentStep == 2 ? 'FINISH' : 'NEXT'),
+                          child:
+                              Text(_currentStep == 2 ? 'FINISH' : 'NEXT'),
                         ),
                       ],
                     ),
@@ -172,42 +248,38 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
   }
 
   Widget _buildStepIndicator() {
-    final stepTitles = ['Training Frequency', 'Primary Goal', 'Available Equipment'];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Step ${_currentStep + 1} of 3',
-                style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12, fontWeight: FontWeight.w700),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      child: Row(
+        children: List.generate(3, (index) {
+          final isCompleted = index < _currentStep;
+          final isCurrent = index == _currentStep;
+
+          return Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(right: index < 2 ? 8.0 : 0),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                height: 8,
                 decoration: BoxDecoration(
-                  color: GritTheme.primary.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
+                  color: isCompleted || isCurrent
+                      ? GritTheme.primary
+                      : Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(4),
                 ),
-                child: Text(
-                  stepTitles[_currentStep],
-                  style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: GritTheme.primary),
-                ),
+                child: isCurrent
+                    ? Center(
+                        child: Icon(
+                          Icons.auto_awesome_rounded,
+                          size: 10,
+                          color: Colors.white.withValues(alpha: 0.9),
+                        ),
+                      )
+                    : null,
               ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: LinearProgressIndicator(
-              value: (_currentStep + 1) / 3,
-              backgroundColor: GritTheme.surfaceLight,
-              valueColor: const AlwaysStoppedAnimation<Color>(GritTheme.primary),
-              minHeight: 8,
             ),
-          ),
-        ],
+          );
+        }),
       ),
     );
   }
@@ -224,12 +296,19 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
         children: [
           Text(
             title,
-            style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w800, fontSize: 20, color: GritTheme.textPrimary),
+            style: TextStyle(
+                fontFamily: 'Rubik',
+                fontWeight: FontWeight.w800,
+                fontSize: 20,
+                color: Theme.of(context).colorScheme.onSurface),
           ),
           const SizedBox(height: 6),
           Text(
             subtitle,
-            style: const TextStyle(color: GritTheme.textSecondary, fontSize: 13, fontWeight: FontWeight.w600),
+            style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                fontSize: 13,
+                fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 20),
           Expanded(child: child),
@@ -238,28 +317,51 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
     );
   }
 
+  BoxDecoration _selectedDecoration(Color accent) {
+    return BoxDecoration(
+      color: accent.withValues(alpha: 0.12),
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: accent, width: 2.5),
+      boxShadow: [
+        BoxShadow(
+          color: accent.withValues(alpha: 0.15),
+          blurRadius: 12,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    );
+  }
+
+  BoxDecoration _unselectedDecoration() {
+    return BoxDecoration(
+      color: Theme.of(context).colorScheme.surface,
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: Theme.of(context).dividerColor, width: 1.5),
+    );
+  }
+
   Widget _buildDaysStep() {
     final options = [2, 3, 4, 5];
     final optionDescs = {
       2: 'Perfect for busy schedules or starting out.',
-      3: 'Classic 3-day split (e.g. Push/Pull/Legs). Ideal balance.',
-      4: 'Upper/Lower body split. Highly optimized frequency.',
-      5: 'Push/Pull/Legs/Upper/Lower. For maximum volume.',
+      3: 'Classic 3-day split. Ideal balance.',
+      4: 'Upper/Lower body split. Highly optimized.',
+      5: 'Maximum volume for dedicated lifters.',
     };
 
     return _buildStepCard(
       title: 'How many days per week can you train?',
       subtitle: 'Choose your weekly frequency. Consistency is key.',
-      child: ListView.separated(
-        shrinkWrap: true,
-        itemCount: options.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          final val = options[index];
+      child: GridView.count(
+        crossAxisCount: 2,
+        crossAxisSpacing: 14,
+        mainAxisSpacing: 14,
+        childAspectRatio: 1.0,
+        children: options.map((val) {
           final isSelected = _daysPerWeek == val;
 
-          return InkWell(
-            borderRadius: BorderRadius.circular(12),
+          return _AnimatedOptionCard(
+            isSelected: isSelected,
             onTap: () {
               setState(() {
                 _daysPerWeek = val;
@@ -267,70 +369,63 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
             },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: isSelected ? GritTheme.primary.withValues(alpha: 0.1) : GritTheme.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: isSelected ? GritTheme.primary : GritTheme.divider,
-                  width: isSelected ? 2 : 1.5,
-                ),
-                boxShadow: isSelected
-                    ? [BoxShadow(color: GritTheme.primary.withValues(alpha: 0.15), blurRadius: 10, offset: const Offset(0, 3))]
-                    : null,
-              ),
-              child: Row(
+              decoration: isSelected
+                  ? _selectedDecoration(GritTheme.primary)
+                  : _unselectedDecoration(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  AnimatedContainer(
+                  AnimatedDefaultTextStyle(
                     duration: const Duration(milliseconds: 200),
-                    width: 38,
-                    height: 38,
-                    decoration: BoxDecoration(
-                      gradient: isSelected ? GritTheme.primaryGradient : null,
-                      color: isSelected ? null : GritTheme.surfaceLight,
-                      shape: BoxShape.circle,
+                    style: TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.w900,
+                      color: isSelected
+                          ? GritTheme.primary
+                          : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
-                    alignment: Alignment.center,
-                    child: Text('$val', style: TextStyle(fontWeight: FontWeight.w900, color: isSelected ? Colors.white : GritTheme.textSecondary)),
+                    child: Text('$val'),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '$val Days / Week',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          optionDescs[val]!,
-                          style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12),
-                        ),
-                      ],
+                  const SizedBox(height: 4),
+                  Text(
+                    'Days / Week',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: isSelected
+                          ? GritTheme.primary
+                          : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      optionDescs[val]!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                        fontSize: 11,
+                        height: 1.3,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
           );
-        },
+        }).toList(),
       ),
     );
   }
 
   Widget _buildGoalStep() {
-    final options = ['Hypertrophy', 'Strength', 'General Fitness'];
-    final optionIcons = {
-      'Hypertrophy': Icons.fitness_center,
-      'Strength': Icons.shield,
-      'General Fitness': Icons.favorite,
-    };
-    final optionDescs = {
-      'Hypertrophy': 'Focus on muscle building and aesthetic definition.',
-      'Strength': 'Focus on lifting heavier and raw power progression.',
-      'General Fitness': 'Focus on overall conditioning, health, and endurance.',
-    };
+    final options = [
+      ('Strength', Icons.shield, 'Focus on lifting heavier and raw power progression.'),
+      ('Hypertrophy', Icons.fitness_center, 'Focus on muscle building and aesthetic definition.'),
+      ('Endurance', Icons.favorite, 'Focus on high-rep work, circuit training, and muscular endurance.'),
+      ('General Fitness', Icons.sports_martial_arts, 'Focus on overall conditioning, health, and balanced fitness.'),
+    ];
 
     return _buildStepCard(
       title: 'What is your primary goal?',
@@ -340,42 +435,38 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
         itemCount: options.length,
         separatorBuilder: (context, index) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
-          final val = options[index];
-          final isSelected = _goal == val;
+          final (label, icon, desc) = options[index];
+          final isSelected = _goal == label;
 
-          return InkWell(
-            borderRadius: BorderRadius.circular(12),
+          return _AnimatedOptionCard(
+            isSelected: isSelected,
             onTap: () {
               setState(() {
-                _goal = val;
+                _goal = label;
               });
             },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: isSelected ? GritTheme.primary.withValues(alpha: 0.1) : GritTheme.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: isSelected ? GritTheme.primary : GritTheme.divider,
-                  width: isSelected ? 2 : 1.5,
-                ),
-                boxShadow: isSelected
-                    ? [BoxShadow(color: GritTheme.primary.withValues(alpha: 0.15), blurRadius: 10, offset: const Offset(0, 3))]
-                    : null,
-              ),
+              decoration: isSelected
+                  ? _selectedDecoration(GritTheme.primary)
+                  : _unselectedDecoration(),
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: isSelected ? GritTheme.primary.withValues(alpha: 0.15) : GritTheme.surfaceLight,
+                      color: isSelected
+                          ? GritTheme.primary.withValues(alpha: 0.15)
+                          : Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
-                      optionIcons[val],
-                      color: isSelected ? GritTheme.primary : GritTheme.textSecondary,
-                      size: 22,
+                      icon,
+                      color: isSelected
+                          ? GritTheme.primary
+                          : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                      size: 24,
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -384,13 +475,20 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          val,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                          label,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          optionDescs[val]!,
-                          style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12),
+                          desc,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ),
@@ -405,62 +503,57 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
   }
 
   Widget _buildEquipmentStep() {
-    final options = ['Full Gym', 'Home Gym', 'Dumbbells Only'];
-    final optionIcons = {
-      'Full Gym': Icons.business,
-      'Home Gym': Icons.home,
-      'Dumbbells Only': Icons.sports_gymnastics,
-    };
-    final optionDescs = {
-      'Full Gym': 'Access to barbells, dumbbells, cables, machines.',
-      'Home Gym': 'Access to barbells, rack, dumbbells.',
-      'Dumbbells Only': 'Access to dumbbells only.',
-    };
+    final options = [
+      ('Full Gym', Icons.business, 'Access to barbells, dumbbells, cables, machines.'),
+      ('Home Gym', Icons.home, 'Access to barbells, rack, dumbbells.'),
+      ('Dumbbell Only', Icons.sports_gymnastics, 'Access to dumbbells only.'),
+      ('Bodyweight', Icons.accessibility_new, 'No equipment — bodyweight exercises only.'),
+    ];
 
     return _buildStepCard(
       title: 'What equipment do you have?',
-      subtitle: 'We will filter routines to match your available gear.',
+      subtitle: 'Select all that apply. We will filter routines to match.',
       child: ListView.separated(
         shrinkWrap: true,
         itemCount: options.length,
         separatorBuilder: (context, index) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
-          final val = options[index];
-          final isSelected = _equipment == val;
+          final (label, icon, desc) = options[index];
+          final isSelected = _selectedEquipment.contains(label);
 
-          return InkWell(
-            borderRadius: BorderRadius.circular(12),
+          return _AnimatedOptionCard(
+            isSelected: isSelected,
             onTap: () {
               setState(() {
-                _equipment = val;
+                if (isSelected) {
+                  _selectedEquipment.remove(label);
+                } else {
+                  _selectedEquipment.add(label);
+                }
               });
             },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: isSelected ? GritTheme.accent.withValues(alpha: 0.1) : GritTheme.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: isSelected ? GritTheme.accent : GritTheme.divider,
-                  width: isSelected ? 2 : 1.5,
-                ),
-                boxShadow: isSelected
-                    ? [BoxShadow(color: GritTheme.accent.withValues(alpha: 0.15), blurRadius: 10, offset: const Offset(0, 3))]
-                    : null,
-              ),
+              decoration: isSelected
+                  ? _selectedDecoration(GritTheme.accent)
+                  : _unselectedDecoration(),
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: isSelected ? GritTheme.accent.withValues(alpha: 0.15) : GritTheme.surfaceLight,
+                      color: isSelected
+                          ? GritTheme.accent.withValues(alpha: 0.15)
+                          : Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
-                      optionIcons[val],
-                      color: isSelected ? GritTheme.accent : GritTheme.textSecondary,
-                      size: 22,
+                      icon,
+                      color: isSelected
+                          ? GritTheme.accent
+                          : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                      size: 24,
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -468,11 +561,44 @@ class _ProgramQuestionnaireScreenState extends ConsumerState<ProgramQuestionnair
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(val, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+                        Text(
+                          label,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
                         const SizedBox(height: 4),
-                        Text(optionDescs[val]!, style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12, fontWeight: FontWeight.w600)),
+                        Text(
+                          desc,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                            fontSize: 12,
+                          ),
+                        ),
                       ],
                     ),
+                  ),
+                  const SizedBox(width: 12),
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 26,
+                    height: 26,
+                    decoration: BoxDecoration(
+                      color: isSelected ? GritTheme.accentViolet : Colors.transparent,
+                      borderRadius: BorderRadius.circular(7),
+                      border: Border.all(
+                        color: isSelected
+                            ? GritTheme.accent
+                            : Theme.of(context).dividerColor,
+                        width: 2,
+                      ),
+                    ),
+                    child: isSelected
+                        ? const Icon(Icons.check_rounded,
+                            color: Colors.white, size: 16)
+                        : null,
                   ),
                 ],
               ),

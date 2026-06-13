@@ -16,6 +16,7 @@ class Exercises extends Table {
   TextColumn get targetMuscle => textEnum<TargetMuscle>()();
   TextColumn get equipment => textEnum<Equipment>()();
   BoolColumn get isCustom => boolean().withDefault(const Constant(false))();
+  TextColumn get imageUrl => text().nullable()();
 }
 
 class WorkoutTemplates extends Table {
@@ -70,17 +71,39 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
       onCreate: (m) async {
         await m.createAll();
-        // Seed default exercises
         await seedDefaultExercises();
       },
+      onUpgrade: (m, from, to) async {
+        if (from < 2) {
+          await m.addColumn(exercises, exercises.imageUrl);
+          await _backfillImageUrls();
+        }
+      },
     );
+  }
+
+  Future<void> _backfillImageUrls() async {
+    try {
+      final jsonStr = await rootBundle.loadString('assets/exercises_seed.json');
+      final List<dynamic> jsonList = json.decode(jsonStr);
+      for (final item in jsonList) {
+        final name = item['name'] as String;
+        final imageUrl = item['imageUrl'] as String?;
+        if (imageUrl != null) {
+          await (update(exercises)..where((t) => t.name.equals(name)))
+              .write(ExercisesCompanion(imageUrl: Value(imageUrl)));
+        }
+      }
+    } catch (e) {
+      print('Error backfilling image URLs: $e');
+    }
   }
 
   Future<void> seedDefaultExercises() async {
@@ -97,6 +120,7 @@ class AppDatabase extends _$AppDatabase {
               targetMuscle: TargetMuscle.fromName(item['targetMuscle'] as String),
               equipment: Equipment.fromName(item['equipment'] as String),
               isCustom: const Value(false),
+              imageUrl: Value(item['imageUrl'] as String?),
             ),
           );
         }

@@ -75,6 +75,17 @@ class $ExercisesTable extends Exercises
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _imageUrlMeta = const VerificationMeta(
+    'imageUrl',
+  );
+  @override
+  late final GeneratedColumn<String> imageUrl = GeneratedColumn<String>(
+    'image_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -83,6 +94,7 @@ class $ExercisesTable extends Exercises
     targetMuscle,
     equipment,
     isCustom,
+    imageUrl,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -122,6 +134,12 @@ class $ExercisesTable extends Exercises
         isCustom.isAcceptableOrUnknown(data['is_custom']!, _isCustomMeta),
       );
     }
+    if (data.containsKey('image_url')) {
+      context.handle(
+        _imageUrlMeta,
+        imageUrl.isAcceptableOrUnknown(data['image_url']!, _imageUrlMeta),
+      );
+    }
     return context;
   }
 
@@ -159,6 +177,10 @@ class $ExercisesTable extends Exercises
         DriftSqlType.bool,
         data['${effectivePrefix}is_custom'],
       )!,
+      imageUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_url'],
+      ),
     );
   }
 
@@ -182,6 +204,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
   final TargetMuscle targetMuscle;
   final Equipment equipment;
   final bool isCustom;
+  final String? imageUrl;
   const Exercise({
     required this.id,
     required this.name,
@@ -189,6 +212,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     required this.targetMuscle,
     required this.equipment,
     required this.isCustom,
+    this.imageUrl,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -209,6 +233,9 @@ class Exercise extends DataClass implements Insertable<Exercise> {
       );
     }
     map['is_custom'] = Variable<bool>(isCustom);
+    if (!nullToAbsent || imageUrl != null) {
+      map['image_url'] = Variable<String>(imageUrl);
+    }
     return map;
   }
 
@@ -222,6 +249,9 @@ class Exercise extends DataClass implements Insertable<Exercise> {
       targetMuscle: Value(targetMuscle),
       equipment: Value(equipment),
       isCustom: Value(isCustom),
+      imageUrl: imageUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imageUrl),
     );
   }
 
@@ -241,6 +271,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
         serializer.fromJson<String>(json['equipment']),
       ),
       isCustom: serializer.fromJson<bool>(json['isCustom']),
+      imageUrl: serializer.fromJson<String?>(json['imageUrl']),
     );
   }
   @override
@@ -257,6 +288,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
         $ExercisesTable.$converterequipment.toJson(equipment),
       ),
       'isCustom': serializer.toJson<bool>(isCustom),
+      'imageUrl': serializer.toJson<String?>(imageUrl),
     };
   }
 
@@ -267,6 +299,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     TargetMuscle? targetMuscle,
     Equipment? equipment,
     bool? isCustom,
+    Value<String?> imageUrl = const Value.absent(),
   }) => Exercise(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -274,6 +307,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     targetMuscle: targetMuscle ?? this.targetMuscle,
     equipment: equipment ?? this.equipment,
     isCustom: isCustom ?? this.isCustom,
+    imageUrl: imageUrl.present ? imageUrl.value : this.imageUrl,
   );
   Exercise copyWithCompanion(ExercisesCompanion data) {
     return Exercise(
@@ -287,6 +321,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
           : this.targetMuscle,
       equipment: data.equipment.present ? data.equipment.value : this.equipment,
       isCustom: data.isCustom.present ? data.isCustom.value : this.isCustom,
+      imageUrl: data.imageUrl.present ? data.imageUrl.value : this.imageUrl,
     );
   }
 
@@ -298,14 +333,22 @@ class Exercise extends DataClass implements Insertable<Exercise> {
           ..write('description: $description, ')
           ..write('targetMuscle: $targetMuscle, ')
           ..write('equipment: $equipment, ')
-          ..write('isCustom: $isCustom')
+          ..write('isCustom: $isCustom, ')
+          ..write('imageUrl: $imageUrl')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, description, targetMuscle, equipment, isCustom);
+  int get hashCode => Object.hash(
+    id,
+    name,
+    description,
+    targetMuscle,
+    equipment,
+    isCustom,
+    imageUrl,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -315,7 +358,8 @@ class Exercise extends DataClass implements Insertable<Exercise> {
           other.description == this.description &&
           other.targetMuscle == this.targetMuscle &&
           other.equipment == this.equipment &&
-          other.isCustom == this.isCustom);
+          other.isCustom == this.isCustom &&
+          other.imageUrl == this.imageUrl);
 }
 
 class ExercisesCompanion extends UpdateCompanion<Exercise> {
@@ -325,6 +369,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
   final Value<TargetMuscle> targetMuscle;
   final Value<Equipment> equipment;
   final Value<bool> isCustom;
+  final Value<String?> imageUrl;
   const ExercisesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -332,6 +377,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     this.targetMuscle = const Value.absent(),
     this.equipment = const Value.absent(),
     this.isCustom = const Value.absent(),
+    this.imageUrl = const Value.absent(),
   });
   ExercisesCompanion.insert({
     this.id = const Value.absent(),
@@ -340,6 +386,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     required TargetMuscle targetMuscle,
     required Equipment equipment,
     this.isCustom = const Value.absent(),
+    this.imageUrl = const Value.absent(),
   }) : name = Value(name),
        targetMuscle = Value(targetMuscle),
        equipment = Value(equipment);
@@ -350,6 +397,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     Expression<String>? targetMuscle,
     Expression<String>? equipment,
     Expression<bool>? isCustom,
+    Expression<String>? imageUrl,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -358,6 +406,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
       if (targetMuscle != null) 'target_muscle': targetMuscle,
       if (equipment != null) 'equipment': equipment,
       if (isCustom != null) 'is_custom': isCustom,
+      if (imageUrl != null) 'image_url': imageUrl,
     });
   }
 
@@ -368,6 +417,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     Value<TargetMuscle>? targetMuscle,
     Value<Equipment>? equipment,
     Value<bool>? isCustom,
+    Value<String?>? imageUrl,
   }) {
     return ExercisesCompanion(
       id: id ?? this.id,
@@ -376,6 +426,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
       targetMuscle: targetMuscle ?? this.targetMuscle,
       equipment: equipment ?? this.equipment,
       isCustom: isCustom ?? this.isCustom,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
   }
 
@@ -404,6 +455,9 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     if (isCustom.present) {
       map['is_custom'] = Variable<bool>(isCustom.value);
     }
+    if (imageUrl.present) {
+      map['image_url'] = Variable<String>(imageUrl.value);
+    }
     return map;
   }
 
@@ -415,7 +469,8 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
           ..write('description: $description, ')
           ..write('targetMuscle: $targetMuscle, ')
           ..write('equipment: $equipment, ')
-          ..write('isCustom: $isCustom')
+          ..write('isCustom: $isCustom, ')
+          ..write('imageUrl: $imageUrl')
           ..write(')'))
         .toString();
   }
@@ -2078,6 +2133,7 @@ typedef $$ExercisesTableCreateCompanionBuilder =
       required TargetMuscle targetMuscle,
       required Equipment equipment,
       Value<bool> isCustom,
+      Value<String?> imageUrl,
     });
 typedef $$ExercisesTableUpdateCompanionBuilder =
     ExercisesCompanion Function({
@@ -2087,6 +2143,7 @@ typedef $$ExercisesTableUpdateCompanionBuilder =
       Value<TargetMuscle> targetMuscle,
       Value<Equipment> equipment,
       Value<bool> isCustom,
+      Value<String?> imageUrl,
     });
 
 final class $$ExercisesTableReferences
@@ -2171,6 +2228,11 @@ class $$ExercisesTableFilterComposer
 
   ColumnFilters<bool> get isCustom => $composableBuilder(
     column: $table.isCustom,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imageUrl => $composableBuilder(
+    column: $table.imageUrl,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2263,6 +2325,11 @@ class $$ExercisesTableOrderingComposer
     column: $table.isCustom,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get imageUrl => $composableBuilder(
+    column: $table.imageUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ExercisesTableAnnotationComposer
@@ -2296,6 +2363,9 @@ class $$ExercisesTableAnnotationComposer
 
   GeneratedColumn<bool> get isCustom =>
       $composableBuilder(column: $table.isCustom, builder: (column) => column);
+
+  GeneratedColumn<String> get imageUrl =>
+      $composableBuilder(column: $table.imageUrl, builder: (column) => column);
 
   Expression<T> templateExercisesRefs<T extends Object>(
     Expression<T> Function($$TemplateExercisesTableAnnotationComposer a) f,
@@ -2386,6 +2456,7 @@ class $$ExercisesTableTableManager
                 Value<TargetMuscle> targetMuscle = const Value.absent(),
                 Value<Equipment> equipment = const Value.absent(),
                 Value<bool> isCustom = const Value.absent(),
+                Value<String?> imageUrl = const Value.absent(),
               }) => ExercisesCompanion(
                 id: id,
                 name: name,
@@ -2393,6 +2464,7 @@ class $$ExercisesTableTableManager
                 targetMuscle: targetMuscle,
                 equipment: equipment,
                 isCustom: isCustom,
+                imageUrl: imageUrl,
               ),
           createCompanionCallback:
               ({
@@ -2402,6 +2474,7 @@ class $$ExercisesTableTableManager
                 required TargetMuscle targetMuscle,
                 required Equipment equipment,
                 Value<bool> isCustom = const Value.absent(),
+                Value<String?> imageUrl = const Value.absent(),
               }) => ExercisesCompanion.insert(
                 id: id,
                 name: name,
@@ -2409,6 +2482,7 @@ class $$ExercisesTableTableManager
                 targetMuscle: targetMuscle,
                 equipment: equipment,
                 isCustom: isCustom,
+                imageUrl: imageUrl,
               ),
           withReferenceMapper: (p0) => p0
               .map(

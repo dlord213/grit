@@ -57,14 +57,14 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
     }
 
     return Scaffold(
-      backgroundColor: GritTheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: GritTheme.surface,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         title: TextField(
           controller: _nameController,
           textAlign: TextAlign.center,
-          style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w800, fontSize: 18, color: GritTheme.textPrimary),
+          style: TextStyle(fontFamily: 'Rubik', fontWeight: FontWeight.w800, fontSize: 18, color: Theme.of(context).colorScheme.onSurface),
           decoration: const InputDecoration(
             hintText: 'Workout Name',
             border: InputBorder.none,
@@ -76,7 +76,7 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
           onChanged: (val) => ref.read(activeWorkoutProvider.notifier).updateName(val.trim()),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.keyboard_arrow_down_rounded, color: GritTheme.textPrimary, size: 28),
+          icon: Icon(Icons.keyboard_arrow_down_rounded, color: Theme.of(context).colorScheme.onSurface, size: 28),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
@@ -86,17 +86,17 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
               margin: const EdgeInsets.only(right: 12, top: 8, bottom: 8),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
               decoration: BoxDecoration(
-                gradient: GritTheme.primaryGradient,
+                color: GritTheme.primary,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Text('FINISH', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13)),
+              child: const Text('FINISH', style: TextStyle(color: GritTheme.onPrimary, fontWeight: FontWeight.w900, fontSize: 13)),
             ),
           ),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
           child: Container(
-            color: GritTheme.surface,
+            color: Theme.of(context).colorScheme.surface,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -114,15 +114,15 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
                       builder: (context, snapshot) {
                         final duration = snapshot.data ?? DateTime.now().difference(activeWorkout.startTime!);
                         return Text(_formatDuration(duration),
-                            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: GritTheme.textPrimary));
+                            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: Theme.of(context).colorScheme.onSurface));
                       },
                     ),
                   ],
                 ),
                 TextButton.icon(
                   onPressed: () => _confirmCancelWorkout(context),
-                  icon: const Icon(Icons.close_rounded, color: Colors.redAccent, size: 16),
-                  label: const Text('Cancel', style: TextStyle(color: Colors.redAccent, fontSize: 12, fontWeight: FontWeight.w700)),
+                  icon: const Icon(Icons.close_rounded, color: GritTheme.danger, size: 16),
+                  label: const Text('Cancel', style: TextStyle(color: GritTheme.danger, fontSize: 12, fontWeight: FontWeight.w700)),
                 ),
               ],
             ),
@@ -139,9 +139,9 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
                   Container(
                     margin: const EdgeInsets.only(bottom: 16),
                     decoration: BoxDecoration(
-                      color: GritTheme.surface,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: GritTheme.divider, width: 1.5),
+                      border: Border.all(color: Theme.of(context).dividerColor, width: 1.5),
                     ),
                     child: TextField(
                       controller: _notesController,
@@ -186,7 +186,7 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       decoration: BoxDecoration(
-        color: GritTheme.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
           BoxShadow(color: GritTheme.accent.withValues(alpha: 0.15), blurRadius: 16, offset: const Offset(0, -4)),
@@ -203,8 +203,8 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(gradient: GritTheme.accentGradient, shape: BoxShape.circle),
-                    child: const Icon(Icons.hourglass_bottom_rounded, color: Colors.white, size: 14),
+                    decoration: BoxDecoration(color: GritTheme.accentViolet, shape: BoxShape.circle),
+                    child: const Icon(Icons.hourglass_bottom_rounded, color: GritTheme.onPrimary, size: 14),
                   ),
                   const SizedBox(width: 10),
                   Column(
@@ -226,8 +226,8 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
                     onTap: () => ref.read(restTimerProvider.notifier).stopTimer(),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(color: Colors.redAccent.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
-                      child: const Text('SKIP', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w800, fontSize: 12)),
+                      decoration: BoxDecoration(color: GritTheme.danger.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+                      child: const Text('SKIP', style: TextStyle(color: GritTheme.danger, fontWeight: FontWeight.w800, fontSize: 12)),
                     ),
                   ),
                 ],
@@ -264,9 +264,9 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: GritTheme.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: GritTheme.divider, width: 1.5),
+        border: Border.all(color: Theme.of(context).dividerColor, width: 1.5),
         boxShadow: [BoxShadow(color: GritTheme.primary.withValues(alpha: 0.05), blurRadius: 12, offset: const Offset(0, 4))],
       ),
       child: Padding(
@@ -281,7 +281,7 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(activeEx.exercise.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: GritTheme.textPrimary)),
+                      Text(activeEx.exercise.name, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: Theme.of(context).colorScheme.onSurface)),
                       Text('${activeEx.exercise.targetMuscle.name} • ${activeEx.exercise.equipment.name}',
                           style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12, fontWeight: FontWeight.w600)),
                     ],
@@ -293,13 +293,13 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
                     if (val == 'delete') ref.read(activeWorkoutProvider.notifier).removeExercise(activeEx.exercise.id);
                   },
                   itemBuilder: (_) => [
-                    const PopupMenuItem(value: 'delete', child: Text('Remove Exercise', style: TextStyle(color: Colors.redAccent))),
+                    const PopupMenuItem(value: 'delete', child: Text('Remove Exercise', style: TextStyle(color: GritTheme.danger))),
                   ],
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            Container(height: 1, color: GritTheme.divider),
+            Container(height: 1, color: Theme.of(context).dividerColor),
             const SizedBox(height: 8),
             Table(
               columnWidths: const {
@@ -312,12 +312,12 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
               },
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
-                const TableRow(children: [
-                  Text('Set', style: TextStyle(color: GritTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.w700)),
-                  Text('Type', style: TextStyle(color: GritTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.w700)),
-                  Text('Last', style: TextStyle(color: GritTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.w700)),
-                  Text('lbs', style: TextStyle(color: GritTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.w700)),
-                  Text('Reps', style: TextStyle(color: GritTheme.textSecondary, fontSize: 11, fontWeight: FontWeight.w700)),
+                TableRow(children: [
+                  Text('Set', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 11, fontWeight: FontWeight.w700)),
+                  Text('Type', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 11, fontWeight: FontWeight.w700)),
+                  Text('Last', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 11, fontWeight: FontWeight.w700)),
+                  Text('lbs', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 11, fontWeight: FontWeight.w700)),
+                  Text('Reps', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 11, fontWeight: FontWeight.w700)),
                   Text('', style: TextStyle(fontSize: 11)),
                 ]),
                 ...List.generate(activeEx.sets.length, (index) {
@@ -329,7 +329,7 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
                         width: 22,
                         height: 22,
                         decoration: BoxDecoration(
-                          color: GritTheme.surfaceLight,
+                          color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(6),
                         ),
                         alignment: Alignment.center,
@@ -343,11 +343,11 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
                         isDense: true,
                         underline: const SizedBox(),
                         icon: const SizedBox(),
-                        dropdownColor: GritTheme.surface,
+                        dropdownColor: Theme.of(context).colorScheme.surface,
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
-                          color: set.setType == SetType.Normal ? GritTheme.textPrimary : (set.setType == SetType.Warmup ? GritTheme.accentWarm : Colors.redAccent),
+                          color: set.setType == SetType.Normal ? Theme.of(context).colorScheme.onSurface : (set.setType == SetType.Warmup ? GritTheme.accentWarm : GritTheme.danger),
                         ),
                         items: SetType.values.map((type) => DropdownMenuItem(value: type, child: Text(type.name[0]))).toList(),
                         onChanged: (val) {
@@ -359,7 +359,7 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       child: Text(
                         set.lastWeight != null ? '${set.lastWeight!.toStringAsFixed(0)}x${set.lastReps}' : '—',
-                        style: const TextStyle(color: GritTheme.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w600),
                       ),
                     ),
                     Padding(
@@ -415,18 +415,17 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
                           width: 24,
                           height: 24,
                           decoration: BoxDecoration(
-                            gradient: set.isCompleted ? GritTheme.primaryGradient : null,
-                            color: set.isCompleted ? null : Colors.transparent,
+                            color: set.isCompleted ? GritTheme.primary : Colors.transparent,
                             borderRadius: BorderRadius.circular(7),
                             border: Border.all(
-                              color: set.isCompleted ? GritTheme.primaryDark : GritTheme.divider,
+                              color: set.isCompleted ? GritTheme.primaryDark : Theme.of(context).dividerColor,
                               width: 2,
                             ),
                             boxShadow: set.isCompleted
                                 ? [BoxShadow(color: GritTheme.primary.withValues(alpha: 0.3), blurRadius: 6)]
                                 : null,
                           ),
-                          child: set.isCompleted ? const Icon(Icons.check_rounded, size: 14, color: Colors.white) : null,
+                          child: set.isCompleted ? const Icon(Icons.check_rounded, size: 14, color: GritTheme.onPrimary) : null,
                         ),
                       ),
                     ),
@@ -477,7 +476,7 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
       builder: (_) => AlertDialog(
         title: const Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: Colors.redAccent),
+            Icon(Icons.warning_amber_rounded, color: GritTheme.danger),
             SizedBox(width: 8),
             Text('Cancel Workout?'),
           ],
@@ -486,7 +485,7 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Keep Going')),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+            style: ElevatedButton.styleFrom(backgroundColor: GritTheme.danger),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Cancel Workout'),
           ),
@@ -545,7 +544,7 @@ class _WorkoutLoggerScreenState extends ConsumerState<WorkoutLoggerScreen> {
             builder: (context, scrollController) => Column(
               children: [
                 const SizedBox(height: 12),
-                Container(width: 40, height: 4, decoration: BoxDecoration(color: GritTheme.divider, borderRadius: BorderRadius.circular(10))),
+                Container(width: 40, height: 4, decoration: BoxDecoration(color: Theme.of(context).dividerColor, borderRadius: BorderRadius.circular(10))),
                 const SizedBox(height: 16),
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -633,16 +632,16 @@ class _ActiveSetInputFieldState extends State<ActiveSetInputField> {
         style: TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w800,
-          color: widget.isCompleted ? GritTheme.textSecondary : GritTheme.textPrimary,
+          color: widget.isCompleted ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6) : Theme.of(context).colorScheme.onSurface,
           decoration: widget.isCompleted ? TextDecoration.lineThrough : null,
         ),
         enabled: !widget.isCompleted,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.zero,
           filled: true,
-          fillColor: widget.isCompleted ? Colors.transparent : GritTheme.surfaceLight,
+          fillColor: widget.isCompleted ? Colors.transparent : Theme.of(context).colorScheme.surface,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: GritTheme.divider, width: 1.5)),
+          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).dividerColor, width: 1.5)),
           focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: GritTheme.primary, width: 2)),
         ),
         onChanged: widget.onChanged,

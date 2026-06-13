@@ -71,6 +71,113 @@ void main() {
     });
   });
 
+  group('Milestone Tracker Tests', () {
+    String getMilestoneZone(double position) {
+      if (position >= 0.95) return 'Elite';
+      if (position >= 0.85) return 'Advanced';
+      if (position >= 0.70) return 'Intermediate';
+      if (position >= 0.50) return 'Novice';
+      return 'Starter';
+    }
+
+    Set<String> detectLevelUps(List<double> sessionMax1RMs) {
+      final Set<String> levelUps = {};
+      double bestSoFar = 0;
+      for (int i = 0; i < sessionMax1RMs.length; i++) {
+        final rm = sessionMax1RMs[i];
+        if (rm > bestSoFar && bestSoFar > 0) {
+          levelUps.add('session_$i');
+        }
+        if (rm > bestSoFar) bestSoFar = rm;
+      }
+      return levelUps;
+    }
+
+    test('Zone calculation: Starter at 0%', () {
+      expect(getMilestoneZone(0.0), 'Starter');
+    });
+
+    test('Zone calculation: Starter at 49%', () {
+      expect(getMilestoneZone(0.49), 'Starter');
+    });
+
+    test('Zone calculation: Novice at 50%', () {
+      expect(getMilestoneZone(0.50), 'Novice');
+    });
+
+    test('Zone calculation: Novice at 69%', () {
+      expect(getMilestoneZone(0.69), 'Novice');
+    });
+
+    test('Zone calculation: Intermediate at 70%', () {
+      expect(getMilestoneZone(0.70), 'Intermediate');
+    });
+
+    test('Zone calculation: Intermediate at 84%', () {
+      expect(getMilestoneZone(0.84), 'Intermediate');
+    });
+
+    test('Zone calculation: Advanced at 85%', () {
+      expect(getMilestoneZone(0.85), 'Advanced');
+    });
+
+    test('Zone calculation: Advanced at 94%', () {
+      expect(getMilestoneZone(0.94), 'Advanced');
+    });
+
+    test('Zone calculation: Elite at 95%', () {
+      expect(getMilestoneZone(0.95), 'Elite');
+    });
+
+    test('Zone calculation: Elite at 100%', () {
+      expect(getMilestoneZone(1.0), 'Elite');
+    });
+
+    test('Zone calculation: Elite beyond 100%', () {
+      expect(getMilestoneZone(1.2), 'Elite');
+    });
+
+    test('LEVEL UP detection: new records are detected', () {
+      final levelUps = detectLevelUps([100, 120, 110, 150]);
+      expect(levelUps, contains('session_1'));
+      expect(levelUps, contains('session_3'));
+      expect(levelUps.contains('session_0'), false);
+      expect(levelUps.contains('session_2'), false);
+    });
+
+    test('LEVEL UP detection: no level up on first session', () {
+      final levelUps = detectLevelUps([100]);
+      expect(levelUps, isEmpty);
+    });
+
+    test('LEVEL UP detection: no level up when not improving', () {
+      final levelUps = detectLevelUps([100, 80, 90, 75]);
+      expect(levelUps, isEmpty);
+    });
+
+    test('LEVEL UP detection: multiple consecutive records', () {
+      final levelUps = detectLevelUps([100, 110, 120, 130]);
+      expect(levelUps, contains('session_1'));
+      expect(levelUps, contains('session_2'));
+      expect(levelUps, contains('session_3'));
+    });
+
+    test('Position clamping: session 1RM equals all-time best', () {
+      final position = (200.0 / 200.0).clamp(0.0, 1.0);
+      expect(position, 1.0);
+    });
+
+    test('Position clamping: session 1RM exceeds all-time best', () {
+      final position = (250.0 / 200.0).clamp(0.0, 1.0);
+      expect(position, 1.0);
+    });
+
+    test('Position calculation: session at half of all-time best', () {
+      final position = (100.0 / 200.0).clamp(0.0, 1.0);
+      expect(position, 0.5);
+    });
+  });
+
   group('Database & Program Generator Tests', () {
     late AppDatabase db;
 
@@ -118,7 +225,7 @@ void main() {
       final count = await generator.generateProgram(
         daysPerWeek: 3,
         goal: 'Hypertrophy',
-        equipment: 'Full Gym',
+        equipment: {'Full Gym'},
       );
 
       // Verify that templates were created
