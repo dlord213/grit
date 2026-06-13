@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/biometric_provider.dart';
 import '../providers/weight_unit_provider.dart';
+import '../providers/shop_provider.dart';
+import '../models/shop_data.dart';
 import 'theme.dart';
 import 'avatar/avatar_builder_screen.dart';
 import 'avatar/avatar_widget.dart';
@@ -91,6 +93,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Widget _buildProfileHeader(dynamic config) {
+    final shopState = ref.watch(shopProvider);
+    final titleId = titleIdFromItemId(shopState.equippedTitle);
+    final titleName = titleDisplayName(titleId);
+    final titleClr = titleColor(titleId);
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -139,7 +146,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         ),
         const SizedBox(width: 20),
-        // Right: Name and Age
+        // Right: Name, Title, and Age
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,6 +205,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ],
                 ),
               ),
+              // Equipped Title
+              if (titleName.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: titleClr.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: titleClr.withValues(alpha: 0.3), width: 1),
+                  ),
+                  child: Text(
+                    titleName,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: titleClr,
+                    ),
+                  ),
+                ),
+              ],
               const SizedBox(height: 16),
               // Divider
               Container(

@@ -74,6 +74,18 @@ class AvatarPainter extends CustomPainter {
       _drawStringerDetails(canvas, bodyLeft, bodyTop, bodyW, bodyH);
     } else if (config.outfit == Outfit.vest) {
       _drawVestDetails(canvas, bodyLeft, bodyTop, bodyW, bodyH);
+    } else if (config.outfit == Outfit.muscleShirt) {
+      _drawMuscleShirtDetails(canvas, bodyLeft, bodyTop, bodyW, bodyH);
+    } else if (config.outfit == Outfit.tankTop3) {
+      _drawTankTop3Details(canvas, bodyLeft, bodyTop, bodyW, bodyH);
+    } else if (config.outfit == Outfit.cropTop) {
+      _drawCropTopDetails(canvas, bodyLeft, bodyTop, bodyW, bodyH);
+    } else if (config.outfit == Outfit.jacket) {
+      _drawJacketDetails(canvas, bodyLeft, bodyTop, bodyW, bodyH);
+    } else if (config.outfit == Outfit.sweater) {
+      _drawSweaterDetails(canvas, bodyLeft, bodyTop, bodyW, bodyH);
+    } else if (config.outfit == Outfit.tankTop4) {
+      _drawTankTop4Details(canvas, bodyLeft, bodyTop, bodyW, bodyH);
     }
   }
 
@@ -160,6 +172,142 @@ class AvatarPainter extends CustomPainter {
     canvas.drawRRect(leftSleeve, borderPaint);
     canvas.drawRRect(rightSleeve, _fillPaint(config.outfitColor));
     canvas.drawRRect(rightSleeve, borderPaint);
+  }
+
+  void _drawMuscleShirtDetails(Canvas canvas, double left, double top, double w, double h) {
+    final borderPaint = _borderPaint();
+    final leftSleeve = RRect.fromRectAndRadius(
+      Rect.fromLTWH(left - w * 0.08, top - 2, w * 0.16, h * 0.18),
+      const Radius.circular(4),
+    );
+    final rightSleeve = RRect.fromRectAndRadius(
+      Rect.fromLTWH(left + w * 0.92, top - 2, w * 0.16, h * 0.18),
+      const Radius.circular(4),
+    );
+    canvas.drawRRect(leftSleeve, _fillPaint(config.outfitColor));
+    canvas.drawRRect(leftSleeve, borderPaint);
+    canvas.drawRRect(rightSleeve, _fillPaint(config.outfitColor));
+    canvas.drawRRect(rightSleeve, borderPaint);
+    final neckPath = Path()
+      ..moveTo(left + w * 0.3, top)
+      ..lineTo(left + w * 0.5, top + h * 0.12)
+      ..lineTo(left + w * 0.7, top);
+    canvas.drawPath(neckPath, borderPaint);
+  }
+
+  void _drawTankTop3Details(Canvas canvas, double left, double top, double w, double h) {
+    final borderPaint = _borderPaint();
+    final leftStrap = Path()
+      ..moveTo(left + w * 0.2, top)
+      ..lineTo(left + w * 0.35, top + h * 0.08)
+      ..lineTo(left + w * 0.45, top)
+      ..close();
+    final rightStrap = Path()
+      ..moveTo(left + w * 0.55, top)
+      ..lineTo(left + w * 0.65, top + h * 0.08)
+      ..lineTo(left + w * 0.8, top)
+      ..close();
+    canvas.drawPath(leftStrap, _fillPaint(config.outfitColor));
+    canvas.drawPath(leftStrap, borderPaint);
+    canvas.drawPath(rightStrap, _fillPaint(config.outfitColor));
+    canvas.drawPath(rightStrap, borderPaint);
+  }
+
+  void _drawCropTopDetails(Canvas canvas, double left, double top, double w, double h) {
+    final borderPaint = _borderPaint();
+    final cropH = h * 0.55;
+    final cropRect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(left, top + h * 0.1, w, cropH),
+      const Radius.circular(10),
+    );
+    canvas.drawRRect(cropRect, _fillPaint(config.outfitColor));
+    canvas.drawRRect(cropRect, borderPaint);
+    final bottomHem = RRect.fromRectAndRadius(
+      Rect.fromLTWH(left - 2, top + h * 0.1 + cropH - 4, w + 4, 8),
+      const Radius.circular(4),
+    );
+    canvas.drawRRect(bottomHem, borderPaint);
+  }
+
+  void _drawJacketDetails(Canvas canvas, double left, double top, double w, double h) {
+    final borderPaint = _borderPaint();
+    final leftSleeve = RRect.fromRectAndRadius(
+      Rect.fromLTWH(left - w * 0.08, top, w * 0.18, h * 0.22),
+      const Radius.circular(6),
+    );
+    final rightSleeve = RRect.fromRectAndRadius(
+      Rect.fromLTWH(left + w * 0.9, top, w * 0.18, h * 0.22),
+      const Radius.circular(6),
+    );
+    canvas.drawRRect(leftSleeve, _fillPaint(config.outfitColor));
+    canvas.drawRRect(leftSleeve, borderPaint);
+    canvas.drawRRect(rightSleeve, _fillPaint(config.outfitColor));
+    canvas.drawRRect(rightSleeve, borderPaint);
+    canvas.drawLine(
+      Offset(left + w * 0.5, top),
+      Offset(left + w * 0.5, top + h * 0.9),
+      borderPaint,
+    );
+    final pocketL = RRect.fromRectAndRadius(
+      Rect.fromLTWH(left + w * 0.08, top + h * 0.55, w * 0.3, h * 0.25),
+      const Radius.circular(6),
+    );
+    final pocketR = RRect.fromRectAndRadius(
+      Rect.fromLTWH(left + w * 0.62, top + h * 0.55, w * 0.3, h * 0.25),
+      const Radius.circular(6),
+    );
+    canvas.drawRRect(pocketL, borderPaint);
+    canvas.drawRRect(pocketR, borderPaint);
+    final collar = RRect.fromRectAndRadius(
+      Rect.fromLTWH(left + w * 0.2, top - h * 0.04, w * 0.6, h * 0.12),
+      const Radius.circular(6),
+    );
+    canvas.drawRRect(collar, _fillPaint(config.outfitColor));
+    canvas.drawRRect(collar, borderPaint);
+  }
+
+  void _drawSweaterDetails(Canvas canvas, double left, double top, double w, double h) {
+    final borderPaint = _borderPaint();
+    final neck = RRect.fromRectAndRadius(
+      Rect.fromLTWH(left + w * 0.25, top - h * 0.02, w * 0.5, h * 0.1),
+      const Radius.circular(6),
+    );
+    canvas.drawRRect(neck, _fillPaint(config.outfitColor));
+    canvas.drawRRect(neck, borderPaint);
+    final stripePaint = Paint()
+      ..color = config.outfitColor.withValues(alpha: 0.3)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+    for (int i = 0; i < 3; i++) {
+      final y = top + h * 0.35 + i * h * 0.15;
+      canvas.drawLine(Offset(left + w * 0.1, y), Offset(left + w * 0.9, y), stripePaint);
+    }
+  }
+
+  void _drawTankTop4Details(Canvas canvas, double left, double top, double w, double h) {
+    final borderPaint = _borderPaint();
+    final leftStrap = Path()
+      ..moveTo(left + w * 0.15, top)
+      ..lineTo(left + w * 0.3, top + h * 0.1)
+      ..lineTo(left + w * 0.4, top)
+      ..close();
+    final rightStrap = Path()
+      ..moveTo(left + w * 0.6, top)
+      ..lineTo(left + w * 0.7, top + h * 0.1)
+      ..lineTo(left + w * 0.85, top)
+      ..close();
+    canvas.drawPath(leftStrap, _fillPaint(config.outfitColor));
+    canvas.drawPath(leftStrap, borderPaint);
+    canvas.drawPath(rightStrap, _fillPaint(config.outfitColor));
+    canvas.drawPath(rightStrap, borderPaint);
+    final logoPaint = Paint()
+      ..color = config.outfitColor.withValues(alpha: 0.3)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+    canvas.drawRect(
+      Rect.fromLTWH(left + w * 0.3, top + h * 0.35, w * 0.4, h * 0.2),
+      logoPaint,
+    );
   }
 
   void _drawArms(Canvas canvas, double w, double h, double center) {
@@ -330,6 +478,146 @@ class AvatarPainter extends CustomPainter {
         );
         canvas.drawRRect(bangs, hairPaint);
         canvas.drawRRect(bangs, borderPaint);
+
+      case HairStyle.curly:
+        final baseY = headTop - 2;
+        for (int i = 0; i < 7; i++) {
+          final curlX = headLeft + headSize * 0.1 + i * headSize * 0.12;
+          final curlR = headSize * 0.08 + (i % 2 == 0 ? 2 : 0);
+          canvas.drawCircle(Offset(curlX, baseY), curlR, hairPaint);
+          canvas.drawCircle(Offset(curlX, baseY), curlR, borderPaint);
+        }
+        final topCurl = RRect.fromRectAndRadius(
+          Rect.fromLTWH(headLeft, headTop - 4, headSize, headSize * 0.2),
+          const Radius.circular(8),
+        );
+        canvas.drawRRect(topCurl, hairPaint);
+        canvas.drawRRect(topCurl, borderPaint);
+
+      case HairStyle.topknot:
+        final topHair = RRect.fromRectAndRadius(
+          Rect.fromLTWH(headLeft - 2, headTop - 4, headSize + 4, headSize * 0.22),
+          const Radius.circular(8),
+        );
+        canvas.drawRRect(topHair, hairPaint);
+        canvas.drawRRect(topHair, borderPaint);
+        final knot = RRect.fromRectAndRadius(
+          Rect.fromLTWH(center - headSize * 0.1, headTop - headSize * 0.22, headSize * 0.2, headSize * 0.18),
+          Radius.circular(headSize * 0.1),
+        );
+        canvas.drawRRect(knot, hairPaint);
+        canvas.drawRRect(knot, borderPaint);
+        final bandRect = RRect.fromRectAndRadius(
+          Rect.fromLTWH(center - headSize * 0.12, headTop - headSize * 0.06, headSize * 0.24, headSize * 0.06),
+          const Radius.circular(3),
+        );
+        canvas.drawRRect(bandRect, _fillPaint(config.hairColorValue.withValues(alpha: 0.6)));
+        canvas.drawRRect(bandRect, borderPaint);
+
+      case HairStyle.dreadlocks:
+        final topHair = RRect.fromRectAndRadius(
+          Rect.fromLTWH(headLeft - 2, headTop - 4, headSize + 4, headSize * 0.25),
+          const Radius.circular(8),
+        );
+        canvas.drawRRect(topHair, hairPaint);
+        canvas.drawRRect(topHair, borderPaint);
+        for (int i = 0; i < 5; i++) {
+          final dreadX = headLeft + headSize * 0.15 + i * headSize * 0.16;
+          final dread = RRect.fromRectAndRadius(
+            Rect.fromLTWH(dreadX, headTop + headSize * 0.12, headSize * 0.07, headSize * 0.5 + (i % 2 == 0 ? 4 : 0)),
+            const Radius.circular(4),
+          );
+          canvas.drawRRect(dread, hairPaint);
+          canvas.drawRRect(dread, borderPaint);
+        }
+
+      case HairStyle.fauxHawk:
+        final hawkPath = Path()
+          ..moveTo(center - headSize * 0.12, headTop + headSize * 0.15)
+          ..lineTo(center, headTop - headSize * 0.18)
+          ..lineTo(center + headSize * 0.12, headTop + headSize * 0.15)
+          ..close();
+        canvas.drawPath(hawkPath, hairPaint);
+        canvas.drawPath(hawkPath, borderPaint);
+        final sideHair = RRect.fromRectAndRadius(
+          Rect.fromLTWH(headLeft, headTop - 2, headSize, headSize * 0.15),
+          const Radius.circular(6),
+        );
+        canvas.drawRRect(sideHair, hairPaint);
+        canvas.drawRRect(sideHair, borderPaint);
+
+      case HairStyle.flatTop:
+        final flatRect = RRect.fromRectAndRadius(
+          Rect.fromLTWH(headLeft + 2, headTop - headSize * 0.08, headSize - 4, headSize * 0.18),
+          const Radius.circular(2),
+        );
+        canvas.drawRRect(flatRect, hairPaint);
+        canvas.drawRRect(flatRect, borderPaint);
+        final sideL = RRect.fromRectAndRadius(
+          Rect.fromLTWH(headLeft - 2, headTop, headSize * 0.15, headSize * 0.2),
+          const Radius.circular(4),
+        );
+        final sideR = RRect.fromRectAndRadius(
+          Rect.fromLTWH(headLeft + headSize * 0.85, headTop, headSize * 0.15, headSize * 0.2),
+          const Radius.circular(4),
+        );
+        canvas.drawRRect(sideL, hairPaint);
+        canvas.drawRRect(sideL, borderPaint);
+        canvas.drawRRect(sideR, hairPaint);
+        canvas.drawRRect(sideR, borderPaint);
+
+      case HairStyle.pompadour:
+        final pompadour = Path()
+          ..moveTo(headLeft, headTop + headSize * 0.1)
+          ..quadraticBezierTo(center, headTop - headSize * 0.25, headLeft + headSize, headTop + headSize * 0.1)
+          ..lineTo(headLeft + headSize, headTop + headSize * 0.18)
+          ..quadraticBezierTo(center, headTop - headSize * 0.08, headLeft, headTop + headSize * 0.18)
+          ..close();
+        canvas.drawPath(pompadour, hairPaint);
+        canvas.drawPath(pompadour, borderPaint);
+
+      case HairStyle.cornrows:
+        final topHair = RRect.fromRectAndRadius(
+          Rect.fromLTWH(headLeft - 2, headTop - 4, headSize + 4, headSize * 0.2),
+          const Radius.circular(8),
+        );
+        canvas.drawRRect(topHair, hairPaint);
+        canvas.drawRRect(topHair, borderPaint);
+        final rowPaint = Paint()
+          ..color = hairPaint.color.withValues(alpha: 0.4)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.5;
+        for (int i = 0; i < 4; i++) {
+          final y = headTop + headSize * 0.05 + i * headSize * 0.05;
+          canvas.drawLine(
+            Offset(headLeft + headSize * 0.15, y),
+            Offset(headLeft + headSize * 0.85, y),
+            rowPaint,
+          );
+        }
+        for (int i = 0; i < 3; i++) {
+          final braidX = headLeft + headSize * 0.25 + i * headSize * 0.22;
+          final braid = RRect.fromRectAndRadius(
+            Rect.fromLTWH(braidX, headTop + headSize * 0.12, headSize * 0.06, headSize * 0.45),
+            const Radius.circular(3),
+          );
+          canvas.drawRRect(braid, hairPaint);
+          canvas.drawRRect(braid, borderPaint);
+        }
+
+      case HairStyle.mullet:
+        final topHair = RRect.fromRectAndRadius(
+          Rect.fromLTWH(headLeft - 2, headTop - 4, headSize + 4, headSize * 0.22),
+          const Radius.circular(8),
+        );
+        canvas.drawRRect(topHair, hairPaint);
+        canvas.drawRRect(topHair, borderPaint);
+        final backHair = RRect.fromRectAndRadius(
+          Rect.fromLTWH(headLeft + headSize * 0.15, headTop + headSize * 0.1, headSize * 0.7, headSize * 0.55),
+          const Radius.circular(8),
+        );
+        canvas.drawRRect(backHair, hairPaint);
+        canvas.drawRRect(backHair, borderPaint);
 
       default:
         break;
@@ -661,6 +949,104 @@ class AvatarPainter extends CustomPainter {
         );
         canvas.drawRRect(capTop, _fillPaint(config.headAccessoryColor));
         canvas.drawRRect(capTop, borderPaint);
+
+      case HeadAccessory.bandana:
+        final bandH = headSize * 0.1;
+        final bandY = headTop + headSize * 0.2;
+        final band = Path()
+          ..moveTo(headLeft - 3, bandY + bandH)
+          ..lineTo(headLeft + headSize * 0.5, bandY)
+          ..lineTo(headLeft + headSize + 3, bandY + bandH * 0.7)
+          ..lineTo(headLeft + headSize + 3, bandY + bandH)
+          ..lineTo(headLeft - 3, bandY + bandH + bandH * 0.3)
+          ..close();
+        canvas.drawPath(band, _fillPaint(config.headAccessoryColor));
+        canvas.drawPath(band, borderPaint);
+        final knot = RRect.fromRectAndRadius(
+          Rect.fromLTWH(headLeft + headSize * 0.85, bandY + bandH, headSize * 0.1, headSize * 0.12),
+          const Radius.circular(3),
+        );
+        canvas.drawRRect(knot, _fillPaint(config.headAccessoryColor));
+        canvas.drawRRect(knot, borderPaint);
+
+      case HeadAccessory.beanie:
+        final beanieTop = RRect.fromRectAndRadius(
+          Rect.fromLTWH(headLeft - 4, headTop - headSize * 0.08, headSize + 8, headSize * 0.32),
+          Radius.circular(headSize * 0.16),
+        );
+        canvas.drawRRect(beanieTop, _fillPaint(config.headAccessoryColor));
+        canvas.drawRRect(beanieTop, borderPaint);
+        final brim = RRect.fromRectAndRadius(
+          Rect.fromLTWH(headLeft - 5, headTop + headSize * 0.18, headSize + 10, headSize * 0.1),
+          const Radius.circular(5),
+        );
+        canvas.drawRRect(brim, _fillPaint(config.headAccessoryColor));
+        canvas.drawRRect(brim, borderPaint);
+        final pomPom = RRect.fromRectAndRadius(
+          Rect.fromLTWH(center - headSize * 0.06, headTop - headSize * 0.14, headSize * 0.12, headSize * 0.1),
+          Radius.circular(headSize * 0.06),
+        );
+        canvas.drawRRect(pomPom, _fillPaint(config.headAccessoryColor));
+        canvas.drawRRect(pomPom, borderPaint);
+
+      case HeadAccessory.glasses:
+        final glassPaint = _fillPaint(config.headAccessoryColor.withValues(alpha: 0.3));
+        final framePaint = _borderPaint()..strokeWidth = 1.5;
+        final lensW = headSize * 0.16;
+        final lensH = headSize * 0.12;
+        final lensY = headTop + headSize * 0.35;
+        final glassSpacing = headSize * 0.18;
+        final leftLens = RRect.fromRectAndRadius(
+          Rect.fromLTWH(center - glassSpacing - lensW / 2 - 2, lensY, lensW, lensH),
+          const Radius.circular(4),
+        );
+        final rightLens = RRect.fromRectAndRadius(
+          Rect.fromLTWH(center + glassSpacing - lensW / 2 + 2, lensY, lensW, lensH),
+          const Radius.circular(4),
+        );
+        canvas.drawRRect(leftLens, glassPaint);
+        canvas.drawRRect(leftLens, framePaint);
+        canvas.drawRRect(rightLens, glassPaint);
+        canvas.drawRRect(rightLens, framePaint);
+        canvas.drawLine(
+          Offset(center - glassSpacing + lensW / 2 - 2, lensY + lensH / 2),
+          Offset(center + glassSpacing - lensW / 2 + 2, lensY + lensH / 2),
+          framePaint,
+        );
+        canvas.drawLine(
+          Offset(center - glassSpacing - lensW / 2 - 2, lensY + lensH / 2),
+          Offset(headLeft - 2, lensY + lensH / 2 - 2),
+          framePaint,
+        );
+        canvas.drawLine(
+          Offset(center + glassSpacing + lensW / 2 + 2, lensY + lensH / 2),
+          Offset(headLeft + headSize + 2, lensY + lensH / 2 - 2),
+          framePaint,
+        );
+
+      case HeadAccessory.mask:
+        final maskY = headTop + headSize * 0.52;
+        final maskH = headSize * 0.28;
+        final mask = RRect.fromRectAndRadius(
+          Rect.fromLTWH(headLeft + headSize * 0.05, maskY, headSize * 0.9, maskH),
+          const Radius.circular(8),
+        );
+        canvas.drawRRect(mask, _fillPaint(config.headAccessoryColor));
+        canvas.drawRRect(mask, borderPaint);
+        final strapPaint = Paint()
+          ..color = _borderColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.5;
+        canvas.drawLine(
+          Offset(headLeft + headSize * 0.05, maskY + maskH * 0.3),
+          Offset(headLeft - 3, maskY + maskH * 0.2),
+          strapPaint,
+        );
+        canvas.drawLine(
+          Offset(headLeft + headSize * 0.95, maskY + maskH * 0.3),
+          Offset(headLeft + headSize + 3, maskY + maskH * 0.2),
+          strapPaint,
+        );
     }
   }
 

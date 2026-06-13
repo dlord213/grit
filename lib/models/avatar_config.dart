@@ -3,17 +3,17 @@ import '../ui/theme.dart';
 
 enum SkinTone { light, medium, tan, dark, deep }
 
-enum HairStyle { none, buzz, short, spiky, mohawk, ponytail, afro, braids, bun, bowlCut }
+enum HairStyle { none, buzz, short, spiky, mohawk, ponytail, afro, braids, bun, bowlCut, curly, topknot, dreadlocks, fauxHawk, flatTop, pompadour, cornrows, mullet }
 
 enum HairColor { black, brown, blonde, pink, blue, red, white, ginger }
 
 enum Expression { happy, focused, determined, surprised, wink, angry, calm, smirk }
 
-enum HeadAccessory { none, headband, thickBand, sweatband, cap }
+enum HeadAccessory { none, headband, thickBand, sweatband, cap, bandana, beanie, glasses, mask }
 
 enum FacialHair { none, stubble, beard, goatee, mustache }
 
-enum Outfit { tankTop, tshirt, hoodie, stringer, shirtless, vest, tankTop2 }
+enum Outfit { tankTop, tshirt, hoodie, stringer, shirtless, vest, tankTop2, muscleShirt, tankTop3, cropTop, jacket, sweater, tankTop4 }
 
 class AvatarConfig {
   final SkinTone skinTone;
@@ -122,6 +122,12 @@ class AvatarConfig {
     Outfit.shirtless => skinColor,
     Outfit.vest => GritTheme.accentWarm,
     Outfit.tankTop2 => const Color(0xFFEF4444),
+    Outfit.muscleShirt => const Color(0xFF1E3A5F),
+    Outfit.tankTop3 => const Color(0xFF7C3AED),
+    Outfit.cropTop => const Color(0xFFFF6B9D),
+    Outfit.jacket => const Color(0xFF2D3748),
+    Outfit.sweater => const Color(0xFF9B59B6),
+    Outfit.tankTop4 => const Color(0xFF27AE60),
   };
 
   Color get headAccessoryColor => switch (headAccessory) {
@@ -130,5 +136,9 @@ class AvatarConfig {
     HeadAccessory.thickBand => GritTheme.primary,
     HeadAccessory.sweatband => GritTheme.success,
     HeadAccessory.cap => GritTheme.accent,
+    HeadAccessory.bandana => const Color(0xFFEF4444),
+    HeadAccessory.beanie => const Color(0xFF4A4A4A),
+    HeadAccessory.glasses => const Color(0xFF1A1A2E),
+    HeadAccessory.mask => const Color(0xFFE8E8E8),
   };
 }

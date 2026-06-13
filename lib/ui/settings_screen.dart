@@ -6,8 +6,10 @@ import 'package:share_plus/share_plus.dart';
 import '../providers/database_provider.dart';
 import '../providers/theme_provider.dart';
 import '../providers/weight_unit_provider.dart';
+import '../providers/shop_provider.dart';
 import 'theme.dart';
 import 'profile_screen.dart';
+import 'shop/shop_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -193,6 +195,8 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 12),
+            _buildShopTile(context, ref),
+            const SizedBox(height: 12),
             _buildThemeToggle(context, ref),
             const SizedBox(height: 12),
             _buildWeightUnitToggle(context, ref),
@@ -369,6 +373,95 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShopTile(BuildContext context, WidgetRef ref) {
+    final shopState = ref.watch(shopProvider);
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const ShopScreen()),
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: GritTheme.accentWarm.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: GritTheme.accentWarm.withValues(alpha: 0.2),
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: GritTheme.accentWarm.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.store_rounded,
+                color: GritTheme.accentWarm,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'GRIT Shop',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: 15,
+                    ),
+                  ),
+                  const Text(
+                    'Spend GP on themes, gear & titles',
+                    style: TextStyle(
+                      color: GritTheme.textSecondary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: GritTheme.accentWarm.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.bolt_rounded, color: GritTheme.accentWarm, size: 14),
+                  const SizedBox(width: 3),
+                  Text(
+                    '${shopState.gpBalance}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 13,
+                      color: GritTheme.accentWarm,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: GritTheme.accentWarm.withValues(alpha: 0.5),
+              size: 20,
+            ),
+          ],
         ),
       ),
     );

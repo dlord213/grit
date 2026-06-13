@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../models/shop_data.dart';
+import '../../providers/shop_provider.dart';
 import '../theme.dart';
 
-class PlateCalculatorModal extends StatefulWidget {
+class PlateCalculatorModal extends ConsumerStatefulWidget {
   final double defaultTargetWeight;
   const PlateCalculatorModal({super.key, required this.defaultTargetWeight});
 
   @override
-  State<PlateCalculatorModal> createState() => _PlateCalculatorModalState();
+  ConsumerState<PlateCalculatorModal> createState() => _PlateCalculatorModalState();
 }
 
-class _PlateCalculatorModalState extends State<PlateCalculatorModal> {
+class _PlateCalculatorModalState extends ConsumerState<PlateCalculatorModal> {
   late TextEditingController _weightController;
   double _barWeight = 45.0;
   bool _isLbs = true;
@@ -50,6 +53,41 @@ class _PlateCalculatorModalState extends State<PlateCalculatorModal> {
   }
 
   Color _getPlateColor(double plate) {
+    final shopState = ref.watch(shopProvider);
+    final style = plateStyleIdFromItemId(shopState.equippedPlateStyle);
+
+    if (style == ShopPlateStyleId.minimal) {
+      if (_isLbs) {
+        if (plate >= 45) return const Color(0xFFE8B4B8);
+        if (plate >= 35) return const Color(0xFFB4D4E8);
+        if (plate >= 25) return const Color(0xFFE8D4B4);
+        if (plate >= 10) return const Color(0xFFB4E8D4);
+        if (plate >= 5) return const Color(0xFFE8C4A0);
+        return const Color(0xFFE0E0E0);
+      } else {
+        if (plate >= 25) return const Color(0xFFE8B4B8);
+        if (plate >= 20) return const Color(0xFFB4D4E8);
+        if (plate >= 15) return const Color(0xFFE8D4B4);
+        if (plate >= 10) return const Color(0xFFB4E8D4);
+        if (plate >= 5) return const Color(0xFFE8C4A0);
+        return const Color(0xFFE0E0E0);
+      }
+    }
+
+    if (style == ShopPlateStyleId.retroIron) {
+      return const Color(0xFF4A4A4A);
+    }
+
+    if (style == ShopPlateStyleId.gold) {
+      if (plate >= 45) return const Color(0xFFD4AF37);
+      if (plate >= 35) return const Color(0xFFE8C84A);
+      if (plate >= 25) return const Color(0xFFF0D860);
+      if (plate >= 10) return const Color(0xFFF5E078);
+      if (plate >= 5) return const Color(0xFFF8E890);
+      return const Color(0xFFFDF0B0);
+    }
+
+    // Standard and NeonGlow use the same base colors
     if (_isLbs) {
       if (plate >= 45) return GritTheme.danger;
       if (plate >= 35) return GritTheme.accent;
@@ -65,6 +103,16 @@ class _PlateCalculatorModalState extends State<PlateCalculatorModal> {
       if (plate >= 5) return Colors.orangeAccent;
       return Colors.white54;
     }
+  }
+
+  List<BoxShadow>? _getPlateShadow(double plate) {
+    final shopState = ref.watch(shopProvider);
+    final style = plateStyleIdFromItemId(shopState.equippedPlateStyle);
+    if (style == ShopPlateStyleId.neonGlow) {
+      final color = _getPlateColor(plate);
+      return [BoxShadow(color: color.withValues(alpha: 0.6), blurRadius: 8, spreadRadius: 1)];
+    }
+    return null;
   }
 
   @override
@@ -248,27 +296,45 @@ class _PlateCalculatorModalState extends State<PlateCalculatorModal> {
                         double height = 40 + (plate * 0.8);
                         if (height > 90) height = 90;
                         double width = 14;
+                        final shopState = ref.watch(shopProvider);
+                        final style = plateStyleIdFromItemId(shopState.equippedPlateStyle);
+                        final isMinimal = style == ShopPlateStyleId.minimal;
+                        final isRetro = style == ShopPlateStyleId.retroIron;
                         return Container(
                           margin: const EdgeInsets.symmetric(horizontal: 1.5),
                           width: width,
                           height: height,
                           decoration: BoxDecoration(
                             color: _getPlateColor(plate),
-                            borderRadius: BorderRadius.circular(3),
-                            border: Border.all(color: GritTheme.darkDivider.withValues(alpha: 0.5), width: 1),
+                            borderRadius: BorderRadius.circular(isRetro ? 1 : 3),
+                            border: isMinimal
+                                ? null
+                                : Border.all(
+                                    color: isRetro
+                                        ? const Color(0xFF3A3A3A)
+                                        : GritTheme.darkDivider.withValues(alpha: 0.5),
+                                    width: isRetro ? 1.5 : 1,
+                                  ),
+                            boxShadow: _getPlateShadow(plate),
                           ),
                           alignment: Alignment.center,
-                          child: RotatedBox(
-                            quarterTurns: 3,
-                            child: Text(
-                              plate.toString().replaceAll('.0', ''),
-                              style: TextStyle(
-                                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : GritTheme.textPrimary,
-                                fontSize: 8,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
+                          child: isMinimal
+                              ? null
+                              : RotatedBox(
+                                  quarterTurns: 3,
+                                  child: Text(
+                                    plate.toString().replaceAll('.0', ''),
+                                    style: TextStyle(
+                                      color: isRetro
+                                          ? const Color(0xFF9A9A9A)
+                                          : Theme.of(context).brightness == Brightness.dark
+                                              ? Colors.white
+                                              : GritTheme.textPrimary,
+                                      fontSize: 8,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
                         );
                       }).toList(),
                     ),

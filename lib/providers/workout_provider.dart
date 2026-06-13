@@ -5,6 +5,7 @@ import '../database/database.dart';
 import '../models/enums.dart';
 import 'database_provider.dart';
 import 'timer_provider.dart';
+import 'shop_provider.dart';
 
 class ActiveSet {
   final int? id; // Null if not saved to DB yet
@@ -443,6 +444,26 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     // Trigger Rest Timer if isCompleted was checked from false to true
     if (updatedSet.isCompleted && !originalSet.isCompleted) {
       _ref.read(restTimerProvider.notifier).startTimer(updatedSet.restTime);
+
+      // Award GP for completed set: floor(weight * reps * 0.05)
+      final gpEarned = (updatedSet.weight * updatedSet.reps * 0.05).floor();
+      if (gpEarned > 0) {
+        _ref.read(shopProvider.notifier).addGp(gpEarned, 'Completed set');
+      }
+
+      // Check for new 1RM record
+      final estimated1RM = updatedSet.weight * (1 + updatedSet.reps / 30);
+      final prevSets = await _db.getAllSetsForExercise(exerciseId);
+      double bestPrev1RM = 0;
+      for (final s in prevSets) {
+        if (s.isCompleted && s.id != updatedSet.id) {
+          final rm = s.weight * (1 + s.reps / 30);
+          if (rm > bestPrev1RM) bestPrev1RM = rm;
+        }
+      }
+      if (estimated1RM > bestPrev1RM && bestPrev1RM > 0) {
+        _ref.read(shopProvider.notifier).addGp(150, 'New 1RM record!');
+      }
     }
 
     // Save to DB
@@ -498,10 +519,54 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       ),
     );
 
+    // Check streak milestones
+    await _checkStreakMilestones();
+
     _stopDurationTimer();
     _ref.read(restTimerProvider.notifier).stopTimer();
 
     state = ActiveWorkoutState();
+  }
+
+  /// Check and award streak milestone GP
+  Future<void> _checkStreakMilestones() async {
+    final now = DateTime.now();
+    final allSessions = await _db.getAllWorkoutSessions();
+    final completedSessions = allSessions.where((s) => s.endTime != null).toList();
+
+    // Compute current streak (consecutive days with completed workouts)
+    final completedDays = <DateTime>{};
+    for (final s in completedSessions) {
+      final day = DateTime(s.startTime.year, s.startTime.month, s.startTime.day);
+      completedDays.add(day);
+    }
+
+    int streak = 0;
+    var checkDate = DateTime(now.year, now.month, now.day);
+    // If today has no completed session yet (we just finished one above but it's not in DB stream yet),
+    // check from yesterday
+    final todayHasSession = completedDays.any((d) =>
+        d.year == checkDate.year && d.month == checkDate.month && d.day == checkDate.day);
+    if (!todayHasSession) {
+      checkDate = checkDate.subtract(const Duration(days: 1));
+    }
+
+    while (completedDays.any((d) =>
+        d.year == checkDate.year && d.month == checkDate.month && d.day == checkDate.day)) {
+      streak++;
+      checkDate = checkDate.subtract(const Duration(days: 1));
+    }
+
+    // Award milestone GP (check existing GP transactions to avoid double-awarding)
+    final recentTx = _ref.read(shopProvider).recentTransactions;
+    final has3DayAward = recentTx.any((t) => t.reason == '3-day streak milestone');
+    final has7DayAward = recentTx.any((t) => t.reason == '7-day streak milestone');
+
+    if (streak >= 7 && !has7DayAward) {
+      _ref.read(shopProvider.notifier).addGp(200, '7-day streak milestone');
+    } else if (streak >= 3 && !has3DayAward) {
+      _ref.read(shopProvider.notifier).addGp(50, '3-day streak milestone');
+    }
   }
 
   /// Cancel and delete active workout

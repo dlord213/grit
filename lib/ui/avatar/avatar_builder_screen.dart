@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/avatar_config.dart';
 import '../../providers/avatar_provider.dart';
+import '../../providers/shop_provider.dart';
 import '../theme.dart';
 import 'avatar_painter.dart';
+import '../shop/shop_screen.dart';
 
 class AvatarBuilderScreen extends ConsumerStatefulWidget {
   const AvatarBuilderScreen({super.key});
@@ -160,18 +162,28 @@ class _AvatarBuilderScreenState extends ConsumerState<AvatarBuilderScreen> {
   }
 
   Widget _buildHairPicker(AvatarConfig config) {
+    final shopState = ref.watch(shopProvider);
     final styles = HairStyle.values;
-    final labels = ['None', 'Buzz', 'Short', 'Spiky', 'Mohawk', 'Pony', 'Afro', 'Braids', 'Bun', 'Bowl'];
+    final labels = ['None', 'Buzz', 'Short', 'Spiky', 'Mohawk', 'Pony', 'Afro', 'Braids', 'Bun', 'Bowl', 'Curly', 'Topknot', 'Dreads', 'FauxHk', 'Flat', 'Pompad', 'Corn', 'Mullet'];
+    final lockedIds = ['hair_curly', 'hair_topknot', 'hair_dreadlocks', 'hair_fauxHawk', 'hair_flatTop', 'hair_pompadour', 'hair_cornrows', 'hair_mullet'];
     return _buildOptionGrid(
-      items: List.generate(styles.length, (i) => _OptionItem(
-        isSelected: config.hairStyle == styles[i],
-        onTap: () => ref.read(avatarProvider.notifier).setHairStyle(styles[i]),
-        child: _buildMiniAvatar(
-          config.copyWith(hairStyle: styles[i]),
-          labels[i],
-          config.hairStyle == styles[i],
-        ),
-      )),
+      items: List.generate(styles.length, (i) {
+        final style = styles[i];
+        final itemId = 'hair_${style.name}';
+        final isLocked = lockedIds.contains(itemId) && !shopState.ownedItemIds.contains(itemId);
+        return _OptionItem(
+          isSelected: config.hairStyle == style,
+          onTap: isLocked
+              ? () => _showLockedDialog(itemId)
+              : () => ref.read(avatarProvider.notifier).setHairStyle(style),
+          child: _buildMiniAvatar(
+            config.copyWith(hairStyle: style),
+            labels[i],
+            config.hairStyle == style,
+            isLocked: isLocked,
+          ),
+        );
+      }),
     );
   }
 
@@ -230,34 +242,54 @@ class _AvatarBuilderScreenState extends ConsumerState<AvatarBuilderScreen> {
   }
 
   Widget _buildAccessoryPicker(AvatarConfig config) {
+    final shopState = ref.watch(shopProvider);
     final accessories = HeadAccessory.values;
-    final labels = ['None', 'Band', 'Thick', 'Sweat', 'Cap'];
+    final labels = ['None', 'Band', 'Thick', 'Sweat', 'Cap', 'Bandana', 'Beanie', 'Glasses', 'Mask'];
+    final lockedIds = ['accessory_bandana', 'accessory_beanie', 'accessory_glasses', 'accessory_mask'];
     return _buildOptionGrid(
-      items: List.generate(accessories.length, (i) => _OptionItem(
-        isSelected: config.headAccessory == accessories[i],
-        onTap: () => ref.read(avatarProvider.notifier).setHeadAccessory(accessories[i]),
-        child: _buildMiniAvatar(
-          config.copyWith(headAccessory: accessories[i]),
-          labels[i],
-          config.headAccessory == accessories[i],
-        ),
-      )),
+      items: List.generate(accessories.length, (i) {
+        final acc = accessories[i];
+        final itemId = 'accessory_${acc.name}';
+        final isLocked = lockedIds.contains(itemId) && !shopState.ownedItemIds.contains(itemId);
+        return _OptionItem(
+          isSelected: config.headAccessory == acc,
+          onTap: isLocked
+              ? () => _showLockedDialog(itemId)
+              : () => ref.read(avatarProvider.notifier).setHeadAccessory(acc),
+          child: _buildMiniAvatar(
+            config.copyWith(headAccessory: acc),
+            labels[i],
+            config.headAccessory == acc,
+            isLocked: isLocked,
+          ),
+        );
+      }),
     );
   }
 
   Widget _buildOutfitPicker(AvatarConfig config) {
+    final shopState = ref.watch(shopProvider);
     final outfits = Outfit.values;
-    final labels = ['Tank', 'Tee', 'Hoodie', 'String', 'Raw', 'Vest', 'Red'];
+    final labels = ['Tank', 'Tee', 'Hoodie', 'String', 'Raw', 'Vest', 'Red', 'Muscle', 'Racer', 'Crop', 'Jacket', 'Sweater', 'StringPro'];
+    final lockedIds = ['outfit_muscleShirt', 'outfit_tankTop3', 'outfit_cropTop', 'outfit_jacket', 'outfit_sweater', 'outfit_tankTop4'];
     return _buildOptionGrid(
-      items: List.generate(outfits.length, (i) => _OptionItem(
-        isSelected: config.outfit == outfits[i],
-        onTap: () => ref.read(avatarProvider.notifier).setOutfit(outfits[i]),
-        child: _buildMiniAvatar(
-          config.copyWith(outfit: outfits[i]),
-          labels[i],
-          config.outfit == outfits[i],
-        ),
-      )),
+      items: List.generate(outfits.length, (i) {
+        final outfit = outfits[i];
+        final itemId = 'outfit_${outfit.name}';
+        final isLocked = lockedIds.contains(itemId) && !shopState.ownedItemIds.contains(itemId);
+        return _OptionItem(
+          isSelected: config.outfit == outfit,
+          onTap: isLocked
+              ? () => _showLockedDialog(itemId)
+              : () => ref.read(avatarProvider.notifier).setOutfit(outfit),
+          child: _buildMiniAvatar(
+            config.copyWith(outfit: outfit),
+            labels[i],
+            config.outfit == outfit,
+            isLocked: isLocked,
+          ),
+        );
+      }),
     );
   }
 
@@ -292,16 +324,38 @@ class _AvatarBuilderScreenState extends ConsumerState<AvatarBuilderScreen> {
     );
   }
 
-  Widget _buildMiniAvatar(AvatarConfig cfg, String label, bool isSelected) {
+  Widget _buildMiniAvatar(AvatarConfig cfg, String label, bool isSelected, {bool isLocked = false}) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(
-          width: 56,
-          height: 78,
-          child: CustomPaint(
-            painter: AvatarPainter(config: cfg),
-          ),
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            SizedBox(
+              width: 56,
+              height: 78,
+              child: CustomPaint(
+                painter: AvatarPainter(config: cfg),
+              ),
+            ),
+            if (isLocked)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    color: GritTheme.accentWarm,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.lock_rounded,
+                    color: GritTheme.onPrimary,
+                    size: 12,
+                  ),
+                ),
+              ),
+          ],
         ),
         const SizedBox(height: 2),
         Text(
@@ -344,6 +398,41 @@ class _AvatarBuilderScreenState extends ConsumerState<AvatarBuilderScreen> {
           ),
         );
       }).toList(),
+    );
+  }
+
+  void _showLockedDialog(String itemId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        title: const Row(
+          children: [
+            Icon(Icons.lock_rounded, color: GritTheme.accentWarm),
+            SizedBox(width: 8),
+            Text('Locked', style: TextStyle(fontWeight: FontWeight.w800)),
+          ],
+        ),
+        content: const Text(
+          'This item must be purchased from the GRIT Shop before you can use it.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ShopScreen()),
+              );
+            },
+            child: const Text('Open Shop'),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -7,6 +7,7 @@ import 'ui/main_navigation_host.dart';
 import 'providers/theme_provider.dart';
 import 'providers/workout_provider.dart';
 import 'providers/timer_provider.dart';
+import 'providers/shop_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -63,11 +64,12 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
+    final palette = ref.watch(activePaletteProvider);
     return MaterialApp(
       title: 'Grit Gym Tracker',
       debugShowCheckedModeBanner: false,
-      theme: GritTheme.lightTheme,
-      darkTheme: GritTheme.darkTheme,
+      theme: GritTheme.buildLightTheme(palette),
+      darkTheme: GritTheme.buildDarkTheme(palette),
       themeMode: themeMode,
       home: const MainNavigationHost(),
     );

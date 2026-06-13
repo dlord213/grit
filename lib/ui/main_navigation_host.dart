@@ -25,7 +25,7 @@ class _MainNavigationHostState extends ConsumerState<MainNavigationHost> {
     const SettingsScreen(),
   ];
 
-  final List<_NavItem> _navItems = const [
+  final List<_NavItem> _navItems = [
     _NavItem(icon: Icons.home_rounded, label: 'Home', color: GritTheme.primary),
     _NavItem(icon: Icons.fitness_center_rounded, label: 'Exercises', color: GritTheme.accent),
     _NavItem(icon: Icons.bar_chart_rounded, label: 'Stats', color: GritTheme.accentWarm),

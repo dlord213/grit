@@ -5,12 +5,13 @@ import '../database/database.dart';
 import '../models/enums.dart';
 import '../providers/database_provider.dart';
 import '../providers/workout_provider.dart';
+import '../providers/shop_provider.dart';
 import 'theme.dart';
 import 'program_questionnaire_screen.dart';
 import 'workout_logger_screen.dart';
 import 'avatar/avatar_widget.dart';
-import 'common/biometric_card.dart';
 import 'profile_screen.dart';
+import 'shop/shop_screen.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -89,6 +90,7 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildHeader(BuildContext context, WidgetRef ref) {
+    final shopState = ref.watch(shopProvider);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -138,27 +140,71 @@ class DashboardScreen extends ConsumerWidget {
             ),
           ],
         ),
-        GestureDetector(
-          onTap: () => _showCreateTemplateDialog(context, ref),
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: GritTheme.primary,
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: GritTheme.primary.withValues(alpha: 0.35),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
+        Row(
+          children: [
+            GestureDetector(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ShopScreen()),
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 8,
                 ),
-              ],
+                decoration: BoxDecoration(
+                  color: GritTheme.accentWarm.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: GritTheme.accentWarm.withValues(alpha: 0.3),
+                    width: 1.5,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.bolt_rounded,
+                      color: GritTheme.accentWarm,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${shopState.gpBalance}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 14,
+                        color: GritTheme.accentWarm,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            child: const Icon(
-              Icons.add_rounded,
-              color: GritTheme.onPrimary,
-              size: 22,
+            const SizedBox(width: 8),
+            GestureDetector(
+              onTap: () => _showCreateTemplateDialog(context, ref),
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: GritTheme.primary,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: GritTheme.primary.withValues(alpha: 0.35),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.add_rounded,
+                  color: GritTheme.onPrimary,
+                  size: 22,
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ],
     );
@@ -464,12 +510,12 @@ class DashboardScreen extends ConsumerWidget {
             size: 32,
           ),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             'No templates yet',
             style: TextStyle(
               fontWeight: FontWeight.w800,
               fontSize: 16,
-              color: GritTheme.textPrimary,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
             ),
           ),
           const SizedBox(height: 6),
