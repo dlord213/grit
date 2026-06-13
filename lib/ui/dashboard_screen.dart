@@ -565,7 +565,7 @@ class DashboardScreen extends ConsumerWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: templates.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      separatorBuilder: (_, __) => SizedBox(height: 10),
       itemBuilder: (context, index) {
         final template = templates[index];
         final colors = [
@@ -647,10 +647,10 @@ class DashboardScreen extends ConsumerWidget {
                       children: [
                         Text(
                           template.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 15,
-                            color: GritTheme.textPrimary,
+                            color: Theme.of(context).colorScheme.onPrimary,
                           ),
                         ),
                         if (template.description != null &&
