@@ -44,7 +44,13 @@ class DashboardScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
                 _buildProgramBanner(context),
                 const SizedBox(height: 16),
-                _buildStartWorkoutButton(context, ref),
+                templatesAsync.when(
+                  data: (templates) => templates.isEmpty
+                      ? _buildNoTemplatesPrompt(context)
+                      : _buildStartWorkoutButton(context, ref),
+                  loading: () => const SizedBox(),
+                  error: (_, __) => const SizedBox(),
+                ),
                 const SizedBox(height: 24),
                 _buildSectionTitle(
                   context,
@@ -434,6 +440,70 @@ class DashboardScreen extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildNoTemplatesPrompt(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+      decoration: BoxDecoration(
+        color: GritTheme.primary.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: GritTheme.primary.withValues(alpha: 0.2),
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.fitness_center_rounded,
+            color: GritTheme.primary,
+            size: 32,
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'No templates yet',
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 16,
+              color: GritTheme.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Create a workout template first,\nthen start your workout from it',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: GritTheme.textSecondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.arrow_upward_rounded,
+                color: GritTheme.primary,
+                size: 18,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                'Use + or Build My Program above',
+                style: TextStyle(
+                  color: GritTheme.primary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
