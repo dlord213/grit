@@ -296,18 +296,27 @@ void main() {
     test('Dynamic naming produces correct format', () {
       final generator = ProgramGenerator(db);
 
-      final name1 = generator.generateProgramName('Beginner', {'Chest'}, 3);
+      final name1 = generator.generateProgramName('Beginner', {'Chest'}, 3, 'Hypertrophy');
       expect(name1, contains('Beginner'));
       expect(name1, contains('Chest'));
       expect(name1, contains('Split'));
 
-      final name2 = generator.generateProgramName('Intermediate', {}, 5);
+      final name2 = generator.generateProgramName('Intermediate', {}, 5, 'Strength');
       expect(name2, contains('Elite'));
       expect(name2, contains('Cycle'));
+      expect(name2, contains('Power'));
 
-      final name3 = generator.generateProgramName('Moderate', {'Back'}, 4);
+      final name3 = generator.generateProgramName('Moderate', {'Back'}, 4, 'Endurance');
       expect(name3, contains('Power'));
       expect(name3, contains('Back'));
+
+      final name4 = generator.generateProgramName('Beginner', {}, 3, 'Endurance');
+      expect(name4, contains('Beginner'));
+      expect(name4, contains('Endurance'));
+
+      final name5 = generator.generateProgramName('Intermediate', {}, 3, 'Strength');
+      expect(name5, contains('Elite'));
+      expect(name5, contains('Power'));
     });
 
     test('Equipment filtering works correctly', () async {
@@ -342,6 +351,45 @@ void main() {
       for (final day in bodyweightOnly.days) {
         for (final slot in day.exercises) {
           expect(slot.exercise.equipment, Equipment.Bodyweight);
+        }
+      }
+    });
+
+    test('Beginner profile excludes technical exercises', () async {
+      final testExercises = [
+        ('Barbell Back Squat', TargetMuscle.Quads, Equipment.Barbell),
+        ('Leg Press', TargetMuscle.Quads, Equipment.Machine),
+        ('Goblet Squat', TargetMuscle.Quads, Equipment.Dumbbell),
+        ('Deadlift', TargetMuscle.Hamstrings, Equipment.Barbell),
+        ('Romanian Deadlift (Barbell)', TargetMuscle.Hamstrings, Equipment.Barbell),
+        ('Lying Leg Curl', TargetMuscle.Hamstrings, Equipment.Machine),
+      ];
+
+      for (final (name, muscle, equip) in testExercises) {
+        await db.insertExercise(
+          ExercisesCompanion.insert(
+            name: name,
+            targetMuscle: muscle,
+            equipment: equip,
+            isCustom: const Value(false),
+          ),
+        );
+      }
+
+      final generator = ProgramGenerator(db);
+
+      final beginnerProgram = await generator.generateProgram(
+        daysPerWeek: 2,
+        goal: 'Hypertrophy',
+        experienceLevel: 'Beginner',
+        targetedFocus: {},
+        equipment: {'Full Gym'},
+      );
+
+      for (final day in beginnerProgram.days) {
+        for (final slot in day.exercises) {
+          expect(slot.exercise.name, isNot('Barbell Back Squat'));
+          expect(slot.exercise.name, isNot('Deadlift'));
         }
       }
     });

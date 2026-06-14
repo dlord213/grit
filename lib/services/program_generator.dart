@@ -39,6 +39,7 @@ class _ExperienceProfile {
   final int minSets;
   final int maxSets;
   final bool preferMachines;
+  final List<String> excludeExercises;
 
   _ExperienceProfile(
     this.minExercises,
@@ -46,12 +47,27 @@ class _ExperienceProfile {
     this.minSets,
     this.maxSets, {
     this.preferMachines = false,
+    this.excludeExercises = const [],
   });
+
+  static const _beginnerExclusions = [
+    'Barbell Back Squat',
+    'Barbell Front Squat',
+    'Deadlift',
+    'Clean and Jerk',
+    'Snatch',
+    'Good Mornings',
+    'Barbell Overhead Press',
+    'Barbell Row',
+    'Deficit Deadlift',
+    'Jefferson Squat',
+  ];
 
   static _ExperienceProfile fromLevel(String level) {
     switch (level) {
       case 'Beginner':
-        return _ExperienceProfile(4, 5, 2, 3, preferMachines: true);
+        return _ExperienceProfile(4, 5, 2, 3,
+            preferMachines: true, excludeExercises: _beginnerExclusions);
       case 'Moderate':
         return _ExperienceProfile(5, 6, 3, 3);
       case 'Intermediate':
@@ -98,9 +114,9 @@ class ProgramGenerator {
       ));
     }
 
-    _applyFocusReordering(dayPlans, targetedFocus, profile);
+    _applyFocusReordering(dayPlans, targetedFocus, profile, available);
 
-    final programName = generateProgramName(experienceLevel, targetedFocus, daysPerWeek);
+    final programName = generateProgramName(experienceLevel, targetedFocus, daysPerWeek, goal);
     _assignDayNames(dayPlans, programName);
 
     return GeneratedProgram(days: dayPlans, programName: programName);
@@ -287,6 +303,7 @@ class ProgramGenerator {
           muscle,
           profile.preferMachines,
           usedExerciseIds,
+          excludeExercises: profile.excludeExercises,
         );
         if (exercise != null) {
           result.add(ExerciseSlot(
@@ -307,6 +324,7 @@ class ProgramGenerator {
         fallbackMuscle,
         profile.preferMachines,
         usedExerciseIds,
+        excludeExercises: profile.excludeExercises,
       );
       if (exercise != null) {
         result.add(ExerciseSlot(
@@ -328,10 +346,14 @@ class ProgramGenerator {
     List<Exercise> available,
     TargetMuscle muscle,
     bool preferMachines,
-    Set<int> usedIds,
-  ) {
+    Set<int> usedIds, {
+    List<String> excludeExercises = const [],
+  }) {
     final candidates = available
-        .where((e) => e.targetMuscle == muscle && !usedIds.contains(e.id))
+        .where((e) =>
+            e.targetMuscle == muscle &&
+            !usedIds.contains(e.id) &&
+            !excludeExercises.contains(e.name))
         .toList();
 
     if (candidates.isEmpty) return null;
@@ -352,6 +374,7 @@ class ProgramGenerator {
     List<DayPlan> dayPlans,
     Set<String> targetedFocus,
     _ExperienceProfile profile,
+    List<Exercise> available,
   ) {
     if (targetedFocus.isEmpty) return;
 
@@ -375,7 +398,7 @@ class ProgramGenerator {
         if (accessoryIdx != -1) {
           final focusMuscle = focusedMuscles.first;
           final replacement = _pickExercise(
-            [],
+            available,
             focusMuscle,
             false,
             day.exercises.map((s) => s.exercise.id).toSet(),
@@ -396,16 +419,41 @@ class ProgramGenerator {
     String experience,
     Set<String> focus,
     int days,
+    String goal,
   ) {
     final primaryFocus = focus.isNotEmpty ? focus.first : null;
 
     String prefix;
     if (experience == 'Beginner') {
-      prefix = primaryFocus != null ? 'Beginner ${primaryFocus} Crusher' : 'Beginner Foundation Builder';
+      if (primaryFocus != null) {
+        prefix = 'Beginner $primaryFocus Crusher';
+      } else if (goal == 'Strength') {
+        prefix = 'Beginner Strength Foundation';
+      } else if (goal == 'Endurance') {
+        prefix = 'Beginner Endurance Builder';
+      } else {
+        prefix = 'Beginner Foundation Builder';
+      }
     } else if (experience == 'Intermediate') {
-      prefix = primaryFocus != null ? 'Elite ${primaryFocus} Warrior' : 'Elite Power Builder';
+      if (primaryFocus != null) {
+        prefix = 'Elite $primaryFocus Warrior';
+      } else if (goal == 'Strength') {
+        prefix = 'Elite Power Builder';
+      } else if (goal == 'Endurance') {
+        prefix = 'Elite Stamina Forge';
+      } else {
+        prefix = 'Elite Power Builder';
+      }
     } else {
-      prefix = primaryFocus != null ? 'Power ${primaryFocus} Shaper' : 'Balanced Power Builder';
+      if (primaryFocus != null) {
+        prefix = 'Power $primaryFocus Shaper';
+      } else if (goal == 'Strength') {
+        prefix = 'Power Strength Architect';
+      } else if (goal == 'Endurance') {
+        prefix = 'Balanced Endurance Engine';
+      } else {
+        prefix = 'Balanced Power Builder';
+      }
     }
 
     final suffix = days <= 3 ? 'Split' : 'Cycle';
